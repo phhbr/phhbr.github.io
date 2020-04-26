@@ -1,0 +1,82 @@
+# Site settings
+title: phhbr.de
+description: >-
+  writing about technology - mostly in the context of his work 
+  for not making the same mistakes twice and others to learn from
+  reach out via <a href="https://github.com/phhbr" target="_blank" rel="noopener">@github</a>.
+lang: en-GB
+timezone: Europe/Berlin
+image: 
+repo: https://github.com/phhbr/phhbr.github.io
+mode: light # default theme "dark" | "light"
+
+# Profile settings
+author:
+  name: philipp huber
+  bio: >-
+    computer scientist. creating. clean code. sustainable.
+  username: phhbr
+  email: blog@phhbr.com
+  avatar: /assets/img/avatar.jpg
+
+# Url settings
+url: "https://phhbr.github.io"
+baseurl:
+permalink: /:title/
+google_analytics:
+fb_appid:
+
+# Collection setting
+collections:
+  posts:
+    output: true
+
+# Markdown settings
+markdown: kramdown
+highlighter: rouge
+kramdown:
+  syntax_highlighter: rouge
+
+# Default front matter
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: post
+      comments: false
+
+# Jekyll Compose default front matter
+jekyll_compose:
+  post_default_front_matter:
+    modified:
+    tags: []
+    description:
+  draft_default_front_matter:
+    modified:
+    tags: []
+    description:
+
+# Build settings
+sass:
+  style: compressed
+
+include:
+  - _redirects
+  - .htaccess
+
+exclude:
+  - CNAME
+  - Gemfile
+  - Gemfile.lock
+  - LICENSE
+  - CHANGELOG.md
+  - README.md
+  - node_modules
+  - CODE_OF_CONDUCT.md
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-sass-converter
+  - jekyll-sitemap
+  - jekyll-postfiles
