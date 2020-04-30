@@ -2,7 +2,7 @@
 title: Colophon
 permalink: /about/
 layout: page
-excerpt: blog about documentation about my coding.
+excerpt: blog about coding.
 comments: false
 ---
 

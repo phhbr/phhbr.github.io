@@ -3,6 +3,7 @@ title: hello world
 date: 2020-05-01 00:00:00 +00:00
 tags: [blog, personal, jekyll, github]
 description: i welcome you to this personal page.
+comments: true
 ---
 
 the website was made using jekyll and using a forked theme called [klisé](https://github.com/piharpi/klise). Thanks a lot for providing this awesome theme 🔥 
