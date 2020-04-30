@@ -1,7 +1,6 @@
 ---
 title: hello world
-date: 2020-04-28 10:00:00 +07:00
-modified: 2020-04-28 10:00:00 +07:00
+date: 2020-05-01 00:00:00 +00:00
 tags: [blog, personal, jekyll, github]
 description: i welcome you to this personal page.
 ---
@@ -12,7 +11,7 @@ the website was made using jekyll and using a forked theme called [klisé](https
 
 #### Hello World
 
-my name is philipp and i'm a football enthusiastic, love to eat, doing some surf and am a lovely husband and stepfather of one. i'm passionate about software development which this web page is mainly about. currently i'm engaged at capgemini in germany and doing mostly frontend matters with angular & stenciljs for various clients.
+my name is philipp and i'm a football 🦅 enthusiastic, love to eat, doing some surf and am a lovely husband and stepfather of one. i'm passionate about software development which this web page is mainly about. currently i'm engaged at capgemini in germany and doing mostly frontend matters with angular & stenciljs for various clients.
 
 on this page i will work on my english writing skills and document some of my daily problems regarding software engineering. 
 
