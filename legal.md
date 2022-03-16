@@ -9,18 +9,18 @@ comments: false
 Legal Notice / Impressum
 
 Imprint
-Philipp Huber
-Heimerichstraße 14
-90419 Nürnberg
+Philipp Bruchner
+Greifswalder Straße 4
+90425 Nürnberg
 
 Contact
 Telephone +49 (0) 911 47 88 56 70
 E-mail blog@phhbr.de
 
 Responsible for content
-Philipp Huber
-Heimerichstraße 14
-90419 Nürnberg
+Philipp Bruchner
+Greifswalder Straße 4
+90425 Nürnberg
 
 
 Disclaimer

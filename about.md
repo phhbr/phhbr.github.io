@@ -6,7 +6,7 @@ excerpt: blog about coding.
 comments: false
 ---
 
-tech blog about my coding.
+tech blog about my coding & daily life.
 
 If you have a question about anything, just send me a mail.
 

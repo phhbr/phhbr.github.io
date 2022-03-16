@@ -12,9 +12,9 @@ mode: light # default theme "dark" | "light"
 
 # Profile settings
 author:
-  name: philipp huber
+  name: philipp bruchner
   bio: >-
-    computer scientist. creating. clean code. sustainable.
+    computer engineer. creating. putting my finger in wounds since 2015.
   username: phhbr
   email: blog@phhbr.com
   avatar: /assets/img/avatar.jpg

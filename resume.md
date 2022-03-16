@@ -8,9 +8,10 @@ comments: false
 
 #### profile
 
-- name: <strong>ph</strong>ilipp <strong>h</strong>u<strong>b</strong>e<strong>r</strong>
+- name: <strong>ph</strong>ilipp <strong>bruchner</strong>
 - function: software engineer
 - focus: architecture, web client development
+- core skills: typescript, web components, angular
 
 <hr>
 
@@ -20,6 +21,15 @@ comments: false
 - 2015-08 - 2017-10   mediendesign ag
 - 2012-10 - 2014-10   computer science, m.sc. (hs regensburg)
 - 2009-03 - 2012-10   business information technology, b.sc (hs regensburg)
+
+<hr>
+
+#### trainer / speaker
+
+- 2020 - 2022   web components
+- 2021 - 2022   web client architecture
+- 2019 - 2021   angular foundations
+- 2019 - 2021   angular advanced
 
 <hr>
 
@@ -34,5 +44,5 @@ comments: false
 
 #### certificates
 
-- 02/2018 professional scrum master (PSM I)
-- 09/2013 ITIL foundation
+- 2020-12 certified architect, L1
+- 2018-02 professional scrum master (PSM I)
