@@ -11,13 +11,13 @@ comments: false
 - name: <strong>ph</strong>ilipp <strong>bruchner</strong>
 - function: software engineer
 - focus: problem solving, web client development, systems design
-- core skills: typescript (Web, NodeJS), Accessibility, GitLab CI/CD, Kubernetes
+- core skills: typescript (web, nodejs), accessibility, gitLab ci/cd, kubernetes
 
 <hr>
 
 #### experience
 
-- since 2022-10       GfK SE (acquired by Nielsen IQ)
+- since 2022-10       gfk se (acquired by nielsen iq)
 - 2017-10 - 2022-10   capgemini deutschland gmbh
 - 2015-08 - 2017-10   mediendesign ag
 - 2012-10 - 2014-10   computer science, m.sc. (hs regensburg)
