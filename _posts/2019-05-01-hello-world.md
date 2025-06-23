@@ -10,7 +10,7 @@ the website was made using jekyll and using a forked theme called [klisé](https
 
 <hr>
 
-#### Hello World
+#### hello world
 
 my name is philipp and i'm a football 🦅 enthusiastic, love to eat, doing some surf and am a lovely husband and stepfather of one. i'm passionate about software development which this web page is mainly about. i'm employed at capgemini in germany and doing frontend stuff with angular & stenciljs.
 

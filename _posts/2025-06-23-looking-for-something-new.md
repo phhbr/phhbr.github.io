@@ -6,7 +6,7 @@ description: job update and availability
 comments: false
 ---
 
-#### Looking for Something New
+#### looking for something new
 
 hey there. it’s been a while again, so time for a proper update.
 
