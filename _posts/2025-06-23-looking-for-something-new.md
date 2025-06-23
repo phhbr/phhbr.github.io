@@ -1,6 +1,6 @@
 ---
 title: looking for something new
-date: 2025-06-23 12:00:00 +00:00
+date: 2025-06-23 00:00:00 +00:00
 tags: [blog, career, frontend]
 description: job update and availability
 comments: false
