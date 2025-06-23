@@ -6,24 +6,34 @@ description: job update and availability
 comments: false
 ---
 
-#### looking for something new
+### 🚀 Looking for Something New
 
-hey there. it’s been a while again, so time for a proper update.
+Hey there 👋 It’s been a while, so here’s a quick update.
 
-jobwise, i’m currently working at **NIQ (formerly GfK SE)** as a **Senior Frontend Software Engineer**. my day-to-day work involves developing internal products for data power users, leading frontend efforts across teams, and maintaining a custom design system that we use across domains. i also handle parts of our CI/CD process via gitlab and manage k8s deployments. 
+👨‍💻 I’m currently working at **NIQ (formerly GfK SE)** as a **Senior Frontend Software Engineer**. I spend my days building internal tools for data power users, leading frontend efforts across domains, and maintaining a custom design system. I’m also responsible for parts of our CI/CD pipeline (GitLab) and manage our Kubernetes-based deployments.
 
-i’ve learned a lot here – especially in terms of large-scale architecture, accessibility, and working with distributed teams – but unfortunately, the company is now undergoing a strategic shift.
+It’s been a great experience—especially in terms of scaling architecture, working across teams, and pushing accessibility forward.
 
-#### why i'm looking for a new position
+---
 
-NIQ is in the process of restructuring globally and has decided to follow a *hubbing* strategy, which means consolidating engineering efforts into a few central locations (outside of germany, india to be precise). as a result, many roles – including mine – are being phased out. i’ve been asked to prepare for offboarding, and while that’s obviously not ideal, i see this as a chance to look ahead and find a new challenge where i can make an impact.
+### ❗ Why I’m Looking for a New Opportunity
 
-so if you’re reading this and you're hiring for frontend engineers – or know someone who is – feel free to reach out.
+NIQ is undergoing a global restructuring and has decided to follow a **hubbing strategy**, consolidating engineering operations into a few international locations (specifically outside of Germany—mainly India).
 
-#### availability
+As part of this shift, many engineering roles—including mine—are being sunset. I’ve been asked to prepare for offboarding.
 
-i’ll officially be available starting **September 15th 2025**, but i'm happy to start conversations earlier.
+While it’s never easy, I’m choosing to see this as an opportunity: to find a new role where I can bring my experience, energy, and technical focus to a team that values thoughtful engineering and user-centered development.
 
-as always, i’m reachable via [cv@phhbr.de](mailto:cv@phhbr.de) or [linkedin.com/in/phhbr](https://linkedin.com/in/phhbr). i’d be excited to contribute to a team that values clean architecture, accessibility, and great user experiences.
+---
 
-#### throw EOF
+### 📬 Availability
+
+I’ll officially be available starting **September 15, 2025**, but I’m happy to start conversations sooner.
+
+If you’re hiring—or know someone who is—feel free to reach out here on LinkedIn or via 📧 [cv@phhbr.de](mailto:cv@phhbr.de). I’d love to hear about teams that value clean architecture, accessibility, and delivering excellent user experiences.
+
+Thanks for reading!
+
+---
+
+`throw EOF`
