@@ -10,14 +10,15 @@ comments: false
 
 - name: <strong>ph</strong>ilipp <strong>bruchner</strong>
 - function: software engineer
-- focus: architecture, web client development
-- core skills: typescript, web components, angular
+- focus: problem solving, web client development, systems design
+- core skills: typescript (Web, NodeJS), Accessibility, GitLab CI/CD, Kubernetes
 
 <hr>
 
 #### experience
 
-- since 2017-10       capgemini deutschland gmbh
+- since 2022-10       GfK SE (acquired by Nielsen IQ)
+- 2017-10 - 2022-10   capgemini deutschland gmbh
 - 2015-08 - 2017-10   mediendesign ag
 - 2012-10 - 2014-10   computer science, m.sc. (hs regensburg)
 - 2009-03 - 2012-10   business information technology, b.sc (hs regensburg)
@@ -26,6 +27,8 @@ comments: false
 
 #### trainer / speaker
 
+- 2024 - 2025   consumer driven contract testing
+- 2023 - 2025   web client security
 - 2020 - 2022   web components
 - 2021 - 2022   web client architecture
 - 2019 - 2021   angular foundations
