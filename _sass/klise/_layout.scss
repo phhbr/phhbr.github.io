@@ -177,6 +177,11 @@
   margin-top: 6.3rem;
   margin-bottom: 7.2rem;
   text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
 
   @include media-query($on-mobile) {
     margin-bottom: 3em;
@@ -185,13 +190,13 @@
   .author-logo {
     width: 120px;
     height: auto;
-    margin-bottom: 1rem;
     user-select: none;
     -ms-user-select: none;
     -webkit-user-select: none;
     -webkit-animation: 0.5s ease-in forwards fadein;
     animation: 0.5s ease-in forwards fadein;
     opacity: 1;
+    order: 2;
 
     &.logo-dark {
       display: none;
@@ -213,6 +218,7 @@
     -webkit-animation: 0.5s ease-in forwards fadein;
     animation: 0.5s ease-in forwards fadein;
     opacity: 1;
+    order: 1;
   }
 
   .author-name {
