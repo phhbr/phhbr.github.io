@@ -124,6 +124,16 @@ body[data-theme="dark"] {
   .navbar {
     border-color: $dark-light;
     .menu {
+      .navbar-logo {
+        .logo-light {
+          display: none;
+        }
+        
+        .logo-dark {
+          display: block;
+        }
+      }
+
       a#mood {
         .mood-sunny {
           display: block;

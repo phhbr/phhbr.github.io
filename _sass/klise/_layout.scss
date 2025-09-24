@@ -16,13 +16,31 @@
   user-select: none;
   -ms-user-select: none;
   -webkit-user-select: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .navbar-logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    opacity: 0.9;
+    
+    &:hover {
+      opacity: 1;
+    }
+    
+    .logo-light {
+      display: block;
+    }
+    
+    .logo-dark {
+      display: none;
+    }
+  }
 
   a#mood {
-    float: left;
-    left: 8px;
-    top: 6px;
     position: relative;
-    clear: both;
     -webkit-transform: scale(1, 1);
     transform: scale(1, 1);
     opacity: 0.7;
@@ -60,7 +78,15 @@
   }
 
   .trigger {
-    float: right;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .trigger-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .menu-trigger {
@@ -103,14 +129,28 @@
     left: 0;
     right: 0;
     z-index: 2;
-    text-align: center;
     height: 50px;
     background-color: $white;
     border-bottom: 1px solid $light;
+    padding: 0 15px;
 
-    a#mood {
-      left: 10px;
-      top: 12px;
+    .navbar-logo {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .trigger {
+      position: absolute;
+      right: 60px;
+      top: 50%;
+      transform: translateY(-50%);
+      
+      a#mood {
+        position: static;
+        transform: none;
+      }
     }
 
     .menu-icon {
@@ -150,13 +190,27 @@
       animation: 0.2s ease-in forwards fadein;
       -webkit-animation: 0.2s ease-in forwards fadein;
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       background-color: $white;
       height: 100vh;
       width: 100%;
       top: 0;
+      transform: none;
+      right: 0;
+      
+      .trigger-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+      
+      a#mood {
+        position: static;
+      }
     }
 
     .menu-link {
@@ -178,7 +232,7 @@
   margin-bottom: 7.2rem;
   text-align: center;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 1rem;
@@ -196,7 +250,6 @@
     -webkit-animation: 0.5s ease-in forwards fadein;
     animation: 0.5s ease-in forwards fadein;
     opacity: 1;
-    order: 2;
 
     &.logo-dark {
       display: none;
@@ -218,16 +271,23 @@
     -webkit-animation: 0.5s ease-in forwards fadein;
     animation: 0.5s ease-in forwards fadein;
     opacity: 1;
-    order: 1;
+    margin-bottom: 1rem;
+  }
+
+  .author-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   .author-name {
     font-size: 1.7em;
-    margin-bottom: 2px;
+    margin: 0;
   }
 
   .author-bio {
-    margin: 0 auto;
+    margin: 0;
     opacity: 0.9;
     max-width: 393px;
     line-height: 1.688;
