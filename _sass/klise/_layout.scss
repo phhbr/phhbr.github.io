@@ -182,6 +182,18 @@
     margin-bottom: 3em;
   }
 
+  .author-logo {
+    width: 120px;
+    height: auto;
+    margin-bottom: 1rem;
+    user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    -webkit-animation: 0.5s ease-in forwards fadein;
+    animation: 0.5s ease-in forwards fadein;
+    opacity: 1;
+  }
+
   .author-avatar {
     width: 70px;
     height: 70px;
