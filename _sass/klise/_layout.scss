@@ -228,8 +228,8 @@
 
 // Author
 .author {
-  margin-top: 6.3rem;
-  margin-bottom: 7.2rem;
+  margin-top: 4rem;
+  margin-bottom: 4rem;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -238,7 +238,8 @@
   gap: 1rem;
 
   @include media-query($on-mobile) {
-    margin-bottom: 3em;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
   }
 
   .author-logo {
