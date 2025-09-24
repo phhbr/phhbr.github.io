@@ -219,6 +219,19 @@ body[data-theme="dark"] {
     }
   }
 
+  // Author logo for dark theme
+  .author {
+    .author-logo {
+      &.logo-light {
+        display: none;
+      }
+
+      &.logo-dark {
+        display: block;
+      }
+    }
+  }
+
   // 404 Page
   .wrapper.not-found {
     .title {
