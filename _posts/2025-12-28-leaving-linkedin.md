@@ -29,7 +29,7 @@ Even without LinkedIn, I remain just as reachable for clients, collaborators, an
 If you’d like to work with me or simply stay in touch, please reach out directly via:
 
 - 📧 Email: **[freelance@phhbr.de](mailto:freelance@phhbr.de)**
-- ☎️ Phone: **[+49 1512 61 66 279]**
+- ☎️ Phone: **+49 (0) 911 47 88 56 70 **
 - 💻 Code & projects: **[GitHub](https://github.com/phhbr)**
 
 ***
