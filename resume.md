@@ -26,33 +26,6 @@ comments: false
 
 <hr>
 
-#### trainer / speaker
-
-- 2024 - 2025   consumer driven contract testing
-- 2023 - 2025   web client security
-- 2020 - 2022   web components
-- 2021 - 2022   web client architecture
-- 2019 - 2021   angular foundations
-- 2019 - 2021   angular advanced
-
-<hr>
-
-#### trainings
-
-- 2019-09     software engineering design advanced
-- 2018-06     angular advanced
-- 2018-04     collaborating with clients
-- 2018-02     software engineering design principles
-
-<hr>
-
-#### certificates
-
-- 2020-12 certified architect, L1
-- 2018-02 professional scrum master (PSM I)
-
-<hr>
-
 #### recommendations
 
 > "Working with Philipp was an absolute pleasure. Any team would be incredibly lucky to have him."
@@ -78,3 +51,30 @@ comments: false
 > "I have always considered Philipp one of our most gifted and incredibly hard working software engineers. Any company he lands in will be more than lucky to have him on board!"
 
 — **Senior Program Manager** at GfK
+
+<hr>
+
+#### trainer / speaker
+
+- 2024 - 2025   consumer driven contract testing
+- 2023 - 2025   web client security
+- 2020 - 2022   web components
+- 2021 - 2022   web client architecture
+- 2019 - 2021   angular foundations
+- 2019 - 2021   angular advanced
+
+<hr>
+
+#### trainings
+
+- 2019-09     software engineering design advanced
+- 2018-06     angular advanced
+- 2018-04     collaborating with clients
+- 2018-02     software engineering design principles
+
+<hr>
+
+#### certificates
+
+- 2020-12 certified architect, L1
+- 2018-02 professional scrum master (PSM I)
