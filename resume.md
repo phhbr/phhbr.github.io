@@ -17,7 +17,7 @@ comments: false
 
 #### experience
 
-- since 2025-09       freelancing software enginner / it consultant
+- since 2025-09       freelancing software engineer / it consultant
 - 2022-10 - 2025-08   gfk se (acquired by nielsen iq)
 - 2017-10 - 2022-10   capgemini deutschland gmbh
 - 2015-08 - 2017-10   mediendesign ag
