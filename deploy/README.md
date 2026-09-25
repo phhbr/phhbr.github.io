@@ -32,16 +32,25 @@ Create the key on your own machine, not on the server:
 ssh-keygen -t ed25519 -N '' -C 'github-actions deploy bruchner.dev' -f bruchner-dev-deploy
 ```
 
-On the server, allow it to do exactly one thing, rsync into the site directory
-(`restrict` turns off forwarding, PTY and `~/.ssh/rc`):
+Allow it to do exactly one thing, rsync into the site directory (`restrict` turns
+off forwarding, PTY and `~/.ssh/rc`). **Run this on your local machine**, in the
+directory containing `bruchner-dev-deploy.pub` — the `$(cat ...)` must expand
+locally, so pipe the result over SSH to your own admin account rather than
+running the whole thing on the server:
 
 ```bash
-sudo install -d -o deploy -g deploy -m 700 /home/deploy/.ssh
-echo "command=\"rrsync /srv/bruchner.dev/site\",restrict $(cat bruchner-dev-deploy.pub)" \
-  | sudo tee /home/deploy/.ssh/authorized_keys
-sudo chown deploy:deploy /home/deploy/.ssh/authorized_keys
-sudo chmod 600 /home/deploy/.ssh/authorized_keys
+sudo install -d -o deploy -g deploy -m 700 /home/deploy/.ssh   # on the server first
+
+ssh <you>@<vps> "echo 'command=\"rrsync /srv/bruchner.dev/site\",restrict $(cat bruchner-dev-deploy.pub)' \
+  | sudo tee /home/deploy/.ssh/authorized_keys > /dev/null \
+  && sudo chown deploy:deploy /home/deploy/.ssh/authorized_keys \
+  && sudo chmod 600 /home/deploy/.ssh/authorized_keys"
 ```
+
+Running the `echo ... $(cat bruchner-dev-deploy.pub)` part directly on the server
+instead silently writes an empty key (the `.pub` file isn't there), leaving
+`authorized_keys` as just the bare `command=...,restrict` prefix — sshd then
+falls through to password auth instead of failing outright.
 
 Check it from your machine. The first command must fail (no shell), the second must list the directory:
 
