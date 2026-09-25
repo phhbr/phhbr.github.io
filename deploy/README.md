@@ -52,11 +52,23 @@ instead silently writes an empty key (the `.pub` file isn't there), leaving
 `authorized_keys` as just the bare `command=...,restrict` prefix — sshd then
 falls through to password auth instead of failing outright.
 
-Check it from your machine. The first command must fail (no shell), the second must list the directory:
+Check it from your machine. The first command must be refused (no shell), the
+second must list the directory:
 
 ```bash
 ssh -i bruchner-dev-deploy deploy@<vps> id
 rsync -e "ssh -i bruchner-dev-deploy" deploy@<vps>:
+```
+
+**On macOS**, `/usr/bin/rsync` is Apple's `openrsync` (BSD-licensed, protocol 29),
+not GNU rsync — `rrsync` validates GNU rsync's argument encoding and rejects
+openrsync's with "invalid rsync-command syntax". This only affects testing from
+a Mac; the GitHub Actions runner has real GNU rsync. Install it and use it
+explicitly for the check above:
+
+```bash
+brew install rsync
+$(brew --prefix rsync)/bin/rsync -e "ssh -i bruchner-dev-deploy" deploy@<vps>:
 ```
 
 ## 3. Caddy (plan 4.1)
