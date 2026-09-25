@@ -1,0 +1,70 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Testimonial from '../components/Testimonial.astro';
+import {
+  certificates,
+  education,
+  experience,
+  profile,
+  teaching,
+  testimonials,
+  trainings,
+  type Role,
+} from '../data/cv';
+
+const timelines: { heading: string; entries: Role[] }[] = [
+  { heading: 'Experience', entries: experience },
+  { heading: 'Education', entries: education },
+  { heading: 'Trainer and speaker', entries: teaching },
+  { heading: 'Trainings', entries: trainings },
+  { heading: 'Certificates', entries: certificates },
+];
+---
+
+<BaseLayout title="CV" description="Curriculum vitae of Philipp Bruchner, software engineer.">
+  <h1 class="page-title">Curriculum vitae</h1>
+
+  <section aria-labelledby="profile">
+    <h2 id="profile" class="visually-hidden">Profile</h2>
+    <ul class="ruled">
+      <li><span class="label">Role</span><span>{profile.role}</span></li>
+      <li><span class="label">Focus</span><span>{profile.focus.join(', ')}</span></li>
+      <li><span class="label">Core skills</span><span>{profile.coreSkills.join(', ')}</span></li>
+    </ul>
+  </section>
+
+  {
+    timelines.map(({ heading, entries }) => (
+      <section>
+        <h2>{heading}</h2>
+        <ul class="ruled">
+          {entries.map(({ period, title }) => (
+            <li>
+              <span class="label">{period}</span>
+              <span>{title}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+
+  <section aria-labelledby="recommendations">
+    <h2 id="recommendations">Recommendations</h2>
+    <div class="quotes">
+      {testimonials.map((t) => <Testimonial {...t} />)}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-title {
+    margin-top: var(--space-5);
+  }
+
+  .quotes {
+    display: grid;
+    gap: var(--space-4);
+    max-width: var(--measure);
+  }
+</style>

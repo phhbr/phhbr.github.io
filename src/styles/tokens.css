@@ -1,0 +1,74 @@
+/* Design tokens. Every colour pair used for text passes WCAG AA in both themes
+   (ink/bg 14.38:1 light, 14.19:1 dark; the hero inspector shows these values). */
+
+@import '@fontsource-variable/martian-mono/wdth.css';
+@import '@fontsource-variable/atkinson-hyperlegible-next/wght.css';
+@import '@fontsource-variable/atkinson-hyperlegible-next/wght-italic.css';
+
+:root {
+  color-scheme: light dark;
+
+  /* Blueprint paper by day, deep blue by night. One accent: inspector blue. */
+  --bg: light-dark(#edf1f5, #0e1620);
+  --surface: light-dark(#ffffff, #16212d);
+  --grid: light-dark(#d5dee8, #1a2633);
+  --ink: light-dark(#14212e, #dce4ee);
+  --muted: light-dark(#4a5a6a, #93a3b5);
+  --accent: light-dark(#1d5fb4, #7fb5f2);
+  --on-accent: light-dark(#ffffff, #0e1620);
+  --highlight: color-mix(in srgb, var(--accent) 16%, transparent);
+  --rule: color-mix(in srgb, var(--ink) 18%, transparent);
+
+  --font-mono: 'Martian Mono Variable', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-body: 'Atkinson Hyperlegible Next Variable', system-ui, sans-serif;
+
+  /* Modular scale, ratio 1.25 on a 17px body. */
+  --step--1: 0.8rem;
+  --step-0: 1.0625rem;
+  --step-1: 1.33rem;
+  --step-2: 1.66rem;
+  --step-3: 2.07rem;
+  --step-hero: clamp(2.1rem, 1.2rem + 4.6vw, 4.6rem);
+
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2.5rem;
+  --space-5: 4rem;
+  --space-6: 6.5rem;
+
+  --grid-size: 24px;
+  --measure: 66ch;
+  --page: 60rem;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+/* Theme-specific content (e.g. the measured contrast ratio in the hero). */
+.only-dark {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .only-light {
+    display: none;
+  }
+
+  :root:not([data-theme='light']) .only-dark {
+    display: inline;
+  }
+}
+
+:root[data-theme='dark'] .only-light {
+  display: none;
+}
+
+:root[data-theme='dark'] .only-dark {
+  display: inline;
+}

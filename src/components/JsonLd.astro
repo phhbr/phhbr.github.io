@@ -1,0 +1,60 @@
+---
+import { getCollection } from 'astro:content';
+import { SITE } from '../config';
+import { stack } from '../data/stack';
+
+// Structured data for search engines: who runs the site and what they offer.
+// A JSON data block is never executed, so it is allowed by the CSP and the
+// inline-code guard.
+const site = new URL('/', Astro.site).href;
+const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+
+const person = {
+  '@type': 'Person',
+  '@id': `${site}#person`,
+  name: SITE.author,
+  url: site,
+  jobTitle: 'Freelance software engineer',
+  email: `mailto:${SITE.email}`,
+  sameAs: [SITE.github],
+  knowsAbout: stack,
+  address: { '@type': 'PostalAddress', addressCountry: 'DE' },
+};
+
+const service = {
+  '@type': 'ProfessionalService',
+  '@id': `${site}#service`,
+  name: `${SITE.author}, software engineering`,
+  description: SITE.description,
+  url: new URL('/services/', site).href,
+  email: SITE.email,
+  founder: { '@id': person['@id'] },
+  address: { '@type': 'PostalAddress', addressCountry: 'DE' },
+  areaServed: [{ '@type': 'Country', name: 'Germany' }, 'Remote'],
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: 'Services',
+    itemListElement: services.map(({ data }) => ({
+      '@type': 'Offer',
+      itemOffered: { '@type': 'Service', name: data.title, description: data.summary },
+    })),
+  },
+};
+
+const website = {
+  '@type': 'WebSite',
+  '@id': `${site}#website`,
+  url: site,
+  name: SITE.title,
+  inLanguage: SITE.lang,
+  publisher: { '@id': person['@id'] },
+};
+
+// Escape `<` so no value can ever close the script element.
+const json = JSON.stringify({ '@context': 'https://schema.org', '@graph': [person, service, website] }).replace(
+  /</g,
+  '\\u003c',
+);
+---
+
+<script type="application/ld+json" set:html={json} />

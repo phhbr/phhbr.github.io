@@ -1,45 +1,27 @@
-# Fork of Klisé
+# bruchner.dev
 
-Klisé is minimalist Jekyll theme for running a personal site and blog running on Jekyll.<br>
-For demo <a href="https://klise.now.sh" target="_blank">klise.now.sh</a>
+Personal site and freelance portfolio of Philipp Bruchner. Built with [Astro](https://astro.build) as a static site.
 
-## Features
+## Development
 
-- Light & Dark Mode support :waxing_crescent_moon:
-- Customizable (using `.scss`)
-- Responsive (desktop, tab and mobile)
-- Mobile First Design
-- SEO Optimized
-- RSS Feed
-- Syntax Highlighter ([rouge](https://github.com/rouge-ruby/rouge))
-- Next & Previous Post
-- Comment layout, enable in frontmatter if you wish
-- Google analytics
-- HTML Minify ([compressed HTML](https://github.com/penibelst/jekyll-compress-html))
-- W3C **Validated**
-- Lighthouse and PageSpeed **Passed**
-
-![Lighthouse](./lighthouse.png)
-
-## Installation
-
-Run local server:
+Requires Node.js 22.12 or newer (see `.nvmrc`) and pnpm, pinned in `package.json` (Corepack picks it up).
 
 ```bash
-git clone https://github.com/piharpi/jekyll-klise.git
-cd jekyll-klise
-bundle install
-bundle exec jekyll serve
+pnpm install
+pnpm dev         # http://localhost:4321
+pnpm build       # astro check + build + inline-code guard → dist/
+pnpm test        # Playwright + axe against the build (run `pnpm build` first)
 ```
 
-Navigate to `localhost:4000`. You're Welcome, Fork and be Stargaze.
+Dependencies are only installed once a release is at least 5 days old (`minimumReleaseAge` in `pnpm-workspace.yaml`), and install scripts run only when allowed there.
 
-**Don't Forget** to change site icon, go to `jekyll-klise/assets/favicons` and replace with your own.
+## Layout
 
-## Contributing
-
-If you see any typos or formatting errors in a post, or any other issue that needs to be addressed, please do not hesitate to open a pull request and fix it!
-
-## License
-
-This project is open source and available under the [MIT License](LICENSE).
+- `src/config.ts`: site identity, contact address and Impressum data
+- `src/content/posts/`: archived posts; the filename minus its date prefix is the URL slug
+- `src/content/services/`: service offerings shown on `/` and `/services/`
+- `src/data/cv.ts`: CV data rendered on `/cv/`
+- `scripts/check-inline.mjs`: fails the build on inline scripts or styles, which the CSP blocks
+- `tests/`: Playwright smoke tests, axe accessibility checks and a CSP test (desktop and mobile)
+- `deploy/`: edge Caddy config, its Docker test, and the server/GitHub setup ([deploy/README.md](deploy/README.md))
+- `.github/workflows/`: CI on pull requests; deploy on push to `main` (rsync to the VPS)
