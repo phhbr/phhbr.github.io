@@ -50,11 +50,37 @@ So `c/o` is not itself the solution — it's just formatting. The question is al
 
 ---
 
-## Recommended path: coworking membership in Nürnberg
+## Your situation
 
-This is the only option that is simultaneously legally solid, privacy-improving, and genuinely useful to you as a freelancer. A flex-desk or part-time membership is sufficient — you do not need a private office.
+Answers on file (2026-09-25):
 
-It also carries a side benefit worth more than the address: coworking spaces in a city like Nürnberg are where local agencies and startups are, which is a reasonable inbound channel now that you've deleted LinkedIn.
+| | |
+|---|---|
+| Coworking space | Not used, not wanted |
+| Phone | `+49 (0) 911 47 88 56 70` — **private landline**, rarely used |
+| Status | **Freiberufler** (no Gewerbeanmeldung) |
+| Steuerberater | None |
+
+That first answer changes the recommendation. Coworking is the legally cleanest way to move the address, but it only makes sense if you'd actually use the space. Paying roughly €100–250/month in Nürnberg for a desk you never visit is a poor trade for one line in an Impressum — and a membership you never show up to sits less comfortably against the *"tatsächlich anzutreffen"* requirement than one you do.
+
+**Revised recommendation: keep the home address for now, and take the cheap wins instead.**
+
+The address on its own is not what makes the current Impressum a pretexting risk. What makes it one is the *combination* — home address **+** private phone **+** full employment timeline with dates **+** education with graduation years, all on one indexed domain. Three of those four are free to fix. Do those first, and revisit the address only if you later want a coworking space for its own sake.
+
+### Do now (free, this migration)
+
+1. **Dedicated phone number** — see below. Biggest single win, and it answers your question directly.
+2. **Remove the phone from the blog post.** A contact detail has no business being duplicated into archived content.
+3. **Check WHOIS on both domains.** If registrar privacy is off, your home address may already be published there, which makes the Impressum debate academic.
+4. **Coarsen the CV.** Years rather than year-months (`2022–2025` instead of `2022-10 – 2025-08`) removes the precision that makes pretexting convincing, and reads better anyway.
+
+### Revisit later
+
+If you do decide you want a coworking space — for the workspace, or as an inbound channel now that LinkedIn is gone — the address becomes a near-free add-on. The vetting steps below are kept for that case.
+
+---
+
+## If you do go the coworking route
 
 ### Step 1 — Shortlist spaces
 
@@ -80,9 +106,11 @@ Ask these directly, and get the answers **in writing**:
 
 Before publishing the address anywhere, go there and confirm your name is actually visible at the entrance or letterbox. Then send yourself an **Einschreiben mit Rückschein** to the new address and confirm it arrives and is signed for. That is your evidence that delivery works.
 
-### Step 4 — Register with the Finanzamt
+### Step 4 — Notify the Finanzamt
 
-As a software engineer you're likely a **Freiberufler** under § 18 EStG (no Gewerbeanmeldung needed), so this is a notification to your Finanzamt rather than a trade registration. Confirm with your Steuerberater — they should also tell you whether the membership is fully deductible as a Betriebsausgabe, which it normally is.
+As a **Freiberufler** under § 18 EStG there's no Gewerbeanmeldung and no Gewerbeamt to inform — so this is a plain notification to your Finanzamt, not a trade registration. You already filed a *Fragebögen zur steuerlichen Erfassung* when you started freelancing; an address change is a far smaller matter and can be done yourself via **ELSTER** or an informal letter quoting your Steuernummer.
+
+With no Steuerberater, two things are on you: the membership is normally fully deductible as a **Betriebsausgabe**, and you should keep the contract and invoices for that reason. At the point where you're weighing office costs, deductibility and address structuring, a Steuerberater usually pays for itself — worth considering independently of this decision, but not a blocker for it.
 
 ### Step 5 — Roll the address out
 
@@ -96,11 +124,36 @@ Update in this order, so nothing points at a half-migrated state:
 - [ ] Any freelancer platform profiles
 - [ ] GitHub profile location, if it shows anything specific
 
-### Step 6 — Consider the phone number separately
+---
 
-The address fix doesn't solve the phone number. `+49 (0) 911 47 88 56 70` appears in both `legal.md` and the `leaving-linkedin` post.
+## The phone number — "is mobile better?"
 
-A telephone number **is** required in the Impressum, so it has to stay there. But it does not need to be your private line — a VoIP business number (Sipgate, Placetel, or similar) forwards to your mobile and is separable from your private identity. And it should be removed from the blog post regardless; there's no reason for a contact detail to be duplicated into archived content.
+**Short answer: yes, but only if it's a *dedicated* number, not your personal mobile.** That is eRecht24's own recommendation:
+
+> "Wollen Sie Spam-Anrufe vermeiden, geben Sie eine **Mobilnummer** an, die Sie **speziell fürs Impressum angelegt** haben."
+
+Swapping a private landline for a private mobile is no improvement — you'd just move the spam from a phone you ignore to one in your pocket. The win comes from the number being *separate*, not from it being mobile.
+
+### A second correction: it isn't strictly mandatory
+
+I previously said a phone number is a required Impressum field. That's the conservative reading, not the legal position. § 5 Abs. 1 Nr. 2 DDG requires *"Angaben, die eine schnelle elektronische Kontaktaufnahme und unmittelbare Kommunikation … ermöglichen, einschließlich der Adresse der elektronischen Post"* — e-mail **plus** one further fast channel. The EuGH (16.10.2008, **C-298/07**) held that the second channel need not be a telephone number; an electronic enquiry form can substitute.
+
+The catch makes it impractical for you: the form only qualifies if you can answer within **30–60 minutes**, and in a dispute *you* bear the burden of proving the form's efficiency. eRecht24's verdict: *"führt kein Weg an einer Telefonnummer im Impressum vorbei"* if you want to avoid arguments with Wettbewerbsverbände. A contact form would also mean a backend and a spam surface — explicitly out of scope for this rebuild.
+
+So: keep a number, just not that one.
+
+### Options
+
+| Option | Cost | Notes |
+|---|---|---|
+| **Dedicated prepaid SIM / eSIM** | ~€5–10/mo | eRecht24's suggestion. Simple, fully separate, no contract entanglement. Needs occasional topping up to stay active |
+| **VoIP number** (Sipgate, Placetel, …) | Free–low | Most flexible: rings your mobile, or goes to voicemail → e-mail. Can be silenced without losing reachability. Best fit if you'd rather not carry a second device |
+| Keep the 0911 landline | €0 | It's your private line. No |
+| Personal mobile | €0 | Moves the problem rather than solving it |
+
+**Suggested:** a VoIP number with voicemail-to-e-mail. Genuine reachability for the one caller a year who needs it, no interruption from the rest, and it detaches cleanly from your private identity. A geographic 0911 VoIP number also keeps the local-business signal if you want it.
+
+Whichever you pick, the number comes **out** of `leaving-linkedin.md` and appears only on `/legal`.
 
 ---
 
@@ -124,7 +177,7 @@ Both affect the current site and are now folded into the migration:
 
 1. **The e-mail address must appear in plain text.** *"Die E-Mail-Adresse muss im Klartext geschrieben werden. Ein Mailto-Link ist nicht ausreichend."* So on `/legal`, `hello@bruchner.dev` must be rendered as readable text — a bare `mailto:` link does not satisfy § 5 DDG. (Elsewhere on the site a `mailto:` link is fine.) This means the address will be scrapeable no matter what; plan for good spam filtering rather than obfuscation.
 
-2. **A telephone number is a mandatory Impressum field**, alongside the e-mail address.
+2. **The e-mail address plus one further fast contact channel** is what § 5 DDG actually requires. A phone number is the only practical way to satisfy the second half — see above.
 
 ---
 
@@ -132,19 +185,28 @@ Both affect the current site and are now folded into the migration:
 
 | Option | Rough cost | Legal risk | Privacy gain | Verdict |
 |---|---|---|---|---|
-| Keep home address | €0 | None | None | Status quo |
+| **Keep home address** | €0 | None | None | ✅ **For now** — pair with the cheap wins above |
 | Virtual office / mailbox | €10–30/mo | **High** — fails BGH test | High | ❌ Don't |
-| **Coworking flex membership** | Market rate, varies | **None** | High | ✅ **Recommended** |
+| Coworking flex membership | ~€100–250/mo | None | High | ⏸️ Only if you'd use the space |
 | Empfangsvollmacht via a lawyer | Higher | Low, if properly drafted | High | Viable, heavier |
 | Dedicated rented office | Highest | None | High | Overkill for one person |
 
 ---
 
-## Open questions for you
+## Action list
 
-1. Do you already use, or want to use, a coworking space in Nürnberg? If yes, the address may be a cheap add-on to something you're paying for anyway.
-2. Is `+49 (0) 911 47 88 56 70` a private line or already a business number?
-3. Are you registered as a **Freiberufler** or did you do a **Gewerbeanmeldung**? It changes who needs notifying in step 4.
-4. Do you have a Steuerberater? They'll have opinions on step 4 and on deductibility.
+Folded into the migration:
 
-Until the new address is live, `/legal` keeps the current address — an incorrect Impressum is a worse problem than a private one.
+- [ ] Set up a dedicated number (VoIP suggested) and put **only** that on `/legal`
+- [ ] Remove `+49 (0) 911 47 88 56 70` from `leaving-linkedin.md`
+- [ ] Render the Impressum e-mail as plain text, not just a `mailto:` link
+- [ ] Keep `/legal` and `/privacy` as separate pages
+- [ ] Coarsen CV dates to years in `src/data/cv.yml`
+
+On you, outside the repo:
+
+- [ ] Check WHOIS privacy on `bruchner.dev` and `phhbr.de`
+- [ ] Consider a Steuerberater — not urgent, but likely overdue at this stage of freelancing
+- [ ] Revisit the address question if you ever want a coworking space for its own sake
+
+`/legal` keeps the current home address until something better is genuinely in place. An incorrect Impressum is a worse problem than a private one.

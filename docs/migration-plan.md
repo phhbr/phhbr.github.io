@@ -178,17 +178,18 @@ Carried over from the audit of the current site. The Jekyll site's attack surfac
 ## Open decisions
 
 ### 1. Home address in the Impressum
-A *ladungsfähige Anschrift* is legally required, but the current combination of home address + phone number + full employment timeline is a ready-made pretexting dossier.
+A *ladungsfähige Anschrift* is legally required, but the current combination of home address + private phone + full employment timeline is a ready-made pretexting dossier.
 
-- **(A)** Keep as-is
-- **(B)** **Coworking space membership in Nürnberg** — **chosen, in progress** (see [c/o address setup](./co-address-setup.md))
-- **(C)** Keep the address, drop the phone from the blog post, use a VoIP number
+**Resolved (2026-09-25): keep the home address for now, fix the cheap wins instead.** Coworking is not wanted, and paying ~€100–250/month for a desk that goes unused is a poor trade for one Impressum line. See [co-address-setup.md](./co-address-setup.md).
 
-> ⚠️ **Correction:** an earlier draft of this plan suggested a *virtual office / mail-forwarding address*. That was wrong — BGH V ZR 210/22 holds that virtual offices are **not** ladungsfähig, so publishing one risks an Abmahnung and a Bußgeld of up to €50,000. Coworking spaces **are** ladungsfähig, even for a single flex desk. Details in [co-address-setup.md](./co-address-setup.md).
+In scope for this migration:
+- Dedicated phone number (VoIP) on `/legal`; the private 0911 landline comes off the site entirely
+- Phone removed from `leaving-linkedin.md`
+- CV dates coarsened to years in `src/data/cv.yml`
 
-Drop the phone number from the post regardless. Note that a phone number is itself a mandatory Impressum field, so it stays on `/legal` — a VoIP business number is the way to keep the private line private.
+> ⚠️ **Correction:** an earlier draft suggested a *virtual office / mail-forwarding address*. That was wrong — BGH V ZR 210/22 holds virtual offices are **not** ladungsfähig, risking an Abmahnung and a Bußgeld up to €50,000. Coworking spaces **are** ladungsfähig, even a single flex desk.
 
-Until the new address is live, `/legal` keeps the current address. An incorrect Impressum is a worse problem than a private one.
+> ⚠️ **Correction:** an earlier draft called a phone number a mandatory Impressum field. EuGH C-298/07 says the second contact channel need not be a phone — but the alternative requires answering a contact form within 30–60 minutes, so in practice a number stays.
 
 ### 2. Deploy mechanism
 SSH-from-CI means GitHub holds a key into the VPS.
