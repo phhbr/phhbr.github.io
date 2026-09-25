@@ -2,7 +2,7 @@
 
 Rebrand and rebuild the personal site as a freelance portfolio: Jekyll → Astro, GitHub Pages → the existing Caddy on the VPS, deploy-on-push via GitHub Actions.
 
-**Status:** in progress on branch `feat/astro-bruchner-dev`. Phases 1 and 2 done (2026-09-25). Package manager is pnpm 12 with a 5-day `minimumReleaseAge`. Playwright smoke tests and axe (WCAG 2.2 AA, both themes) in `tests/`. Phase 3 done in the repo (2026-09-25); 3.9 and 3.10 land with Phase 4. Contact address is `hello@phhbr.de` until 0.2 is done.
+**Status:** in progress on branch `feat/astro-bruchner-dev`. Phases 1 and 2 done (2026-09-25). Package manager is pnpm 12 with a 5-day `minimumReleaseAge`. Playwright smoke tests and axe (WCAG 2.2 AA, both themes) in `tests/`. Phases 3 and 4 done in the repo (2026-09-25): Caddy config, workflows and `deploy/README.md`. Next: host and GitHub setup (0.3, 0.4, `deploy/README.md`), then cutover. Contact address is `hello@phhbr.de` until 0.2 is done.
 
 ---
 
@@ -49,8 +49,8 @@ All 301s live in the edge Caddy config (4.1). Astro's `redirects` option is **no
   - Then switch `SITE.email` in `src/config.ts` and replace `hello@phhbr.de` in `src/content/posts/` (the site uses it as the interim address)
   - Keep `blog@` / `cv@` / `freelance@phhbr.de` receiving; phhbr.de's MX/SPF/DKIM/DMARC are **never touched** during this migration
   - Verify: all Proton DNS checks green, send to a Gmail account (SPF/DKIM/DMARC `pass` in headers), mail-tester.com ≥ 9/10
-- [ ] 0.3 VPS: create `deploy` user with **no password, no shell login**, not in `docker`/`sudo`; `/srv/bruchner.dev/site/` owned by `deploy`, world-readable so Caddy can serve it
-- [ ] 0.4 Dedicated ed25519 deploy key in `~deploy/.ssh/authorized_keys`: `command="rrsync /srv/bruchner.dev/site",no-agent-forwarding,no-port-forwarding,no-pty,no-X11-forwarding`. The key can write into that one directory and do nothing else
+- [ ] 0.3 VPS (commands in `deploy/README.md` §1): create `deploy` user with **locked password** (it needs `/bin/sh` only because sshd runs the forced command through it), not in `docker`/`sudo`; `/srv/bruchner.dev/site/` owned by `deploy`, world-readable so Caddy can serve it
+- [ ] 0.4 Dedicated ed25519 deploy key in `~deploy/.ssh/authorized_keys`: `command="rrsync /srv/bruchner.dev/site",restrict` (`restrict` = no forwarding, no PTY, no `~/.ssh/rc`). The key can write into that one directory and do nothing else. Tested in Debian bookworm (rsync 3.2.7): the deploy flags pass rrsync, a repeat run transfers nothing, `..` paths are refused. Commands in `deploy/README.md` §2
 - [ ] 0.5 Optional: `CAA` records on bruchner.dev. Caddy falls back to ZeroSSL when Let's Encrypt fails, so allow **both** (`0 issue "letsencrypt.org"`, `0 issue "sectigo.com"`) or pin Caddy to Let's Encrypt
 
 ## Phase 1 — Astro scaffold + content migration
@@ -104,8 +104,8 @@ All 301s live in the edge Caddy config (4.1). Astro's `redirects` option is **no
 - [x] 3.6 Remove the `<meta name="referrer">` tag (header supersedes it) and the leftover Pinterest `p:domain_verify` token (gone with the Jekyll templates)
 - [x] 3.7 **pnpm 12** pinned via `packageManager` (itself at least 5 days old). `pnpm-workspace.yaml`: `minimumReleaseAge: 7200` (5 days) and `allowBuilds` (install scripts denied unless listed; esbuild's is not needed). **Commit `pnpm-lock.yaml`** + `.github/dependabot.yml` for `npm` (covers pnpm lockfiles) and `github-actions`, weekly, **grouped**, with `cooldown.default-days: 5` so its PRs respect the same age rule. `.github/dependabot.yml` only takes effect once it is on the default branch (6.3); check then that Dependabot handles the pnpm 12 lockfile. `pnpm audit --audit-level=high` runs as a **report-only** job (4.2), not a deploy gate: an advisory in a build-only dependency must not block an urgent Impressum fix
 - [x] 3.8 GitHub secret scanning + push protection enabled (2026-09-25). Once the repo is private (6.2), repo-level secret scanning needs GitHub's paid Secret Protection; push protection for your own account keeps working
-- [ ] 3.9 Host side: the deploy key can only run `rrsync` into `/srv/bruchner.dev/site` (0.4). Uploaded files are `D755,F644`; Caddy only reads. CI never writes Caddy config
-- [ ] 3.10 CI hardening: pin all actions by commit SHA, least-privilege `permissions:` per job, no `pull_request_target`, no secrets in fork PRs
+- [x] 3.9 Host side (repo part; applied with 0.3/0.4): the deploy key can only run `rrsync` into `/srv/bruchner.dev/site` (0.4). Uploaded files are `D755,F644`; Caddy only reads. CI never writes Caddy config
+- [x] 3.10 CI hardening: all actions pinned by commit SHA (each release at least 5 days old), `permissions: {}` at workflow level and least privilege per job, `persist-credentials: false`, no `pull_request_target`, no secrets outside the `production` environment, secrets passed via `env:` not inline. `actionlint` and `zizmor` clean (one low note about the new `$/` self-reference syntax, left as the documented `./`)
 - [x] 3.11 All external links get `rel="noopener noreferrer"`: components set it, and a Sätteri HAST plugin (`src/utils/external-links.ts`) adds it to Markdown links; tested on every page. Email stays a `mailto:`, since a contact form would add a backend and a spam surface for no real gain. **Exception:** on `/legal` the address must be rendered as **plain text**, since § 5 DDG is not satisfied by a `mailto:` link alone
 - [x] 3.12 `/.well-known/security.txt` with `Contact:` from `SITE.email` and an `Expires` refreshed on every build
 - [x] 3.13 `robots.txt` pointing at `https://bruchner.dev/sitemap-index.xml`; sitemap generated with the correct origin
@@ -113,28 +113,28 @@ All 301s live in the edge Caddy config (4.1). Astro's `redirects` option is **no
 
 ## Phase 4 — Serving + CI/CD
 
-- [ ] 4.1 `deploy/bruchner.dev.caddy`: the edge site blocks, **versioned in the repo and applied to the host by hand**:
-  - `bruchner.dev`: `root * /srv/bruchner.dev/site`, `file_server`, `encode zstd gzip`, `import security_headers …` from `deploy/security-headers.caddy` (3.2–3.5)
+- [x] 4.1 `deploy/bruchner.dev.caddy`: the edge site blocks, **versioned in the repo and applied to the host by hand** (`deploy/README.md` §3). `deploy/test-caddy.sh` runs it in Docker against the build with Caddy's internal CA and checks 30 things: headers, caching, compression, every legacy redirect, 404, www. It caught that `handle_errors` does not inherit headers, so the per-site headers are one local snippet imported in both routes; that snippet also holds the 5.1 → 5.2 launch switch:
+  - `bruchner.dev`: `root * /srv/bruchner.dev/site`, `file_server`, `encode zstd gzip`, `import bruchner_dev_headers …` from `deploy/security-headers.caddy` (3.2–3.5)
   - `Cache-Control: public, max-age=31536000, immutable` for `/_astro/*`; `no-cache` for HTML
-  - Legacy redirect map from the table above (`redir … permanent`)
-  - `handle_errors` → rewrite to `/404.html`
-  - Access logging: **off**, or on with IPs masked (`log { format filter { request>remote_ip ip_mask 16 32 } }`) and a stated retention. The privacy page (2.5) must match what is configured
+  - Legacy redirect map from the table above (`redir … permanent`), with and without trailing slash
+  - `handle_errors 404` → rewrite to `/404.html`, with the same headers
+  - Access logging: **off** (no `log` directive), matching the privacy page
   - `www.bruchner.dev` → `redir https://bruchner.dev{uri} permanent`
-  - `phhbr.de, www.phhbr.de` → `redir https://bruchner.dev{uri} permanent` (legacy paths then hit the map above; two hops is acceptable)
-- [ ] 4.2 `.github/workflows/deploy.yml`, triggered on push to `main` **and** `workflow_dispatch` (with a `ref` input):
-  - job `build`: checkout → `pnpm/action-setup` (version from `packageManager`) → setup-node (pnpm cache) → `pnpm install --frozen-lockfile` → `pnpm run build` (runs `astro check`) → 3.3 inline guard → write `dist/version.txt` with the commit SHA → upload artifact
-  - job `deploy` (needs build): `rsync -rlc --delete-delay --delay-updates --chmod=D755,F644 dist/ deploy@$VPS_HOST:` → `curl https://bruchner.dev/version.txt` must equal the SHA
-  - Secrets: `VPS_HOST`, `VPS_SSH_KEY`, `VPS_SSH_KNOWN_HOSTS`. Pin the host key; **never** `StrictHostKeyChecking=no`
+  - `phhbr.de, www.phhbr.de` → `redir https://bruchner.dev{uri} permanent`, commented out until 5.4 (legacy paths then hit the map above; two hops is acceptable)
+- [x] 4.2 `.github/workflows/deploy.yml`, triggered on push to `main` (and to `feat/astro-bruchner-dev` until 6.3, because `workflow_dispatch` only works once the file is on the default branch) **and** `workflow_dispatch` (with a `ref` input). It calls `ci.yml` as its first stage:
+  - `ci.yml` job `build`: checkout → `pnpm/action-setup` (version from `packageManager`) → setup-node (pnpm cache) → `pnpm install --frozen-lockfile` → `pnpm run build` (`astro check`, build, inline guard) → `dist/version.txt` → `pnpm test` → lychee (internal links, offline) → `deploy/test-caddy.sh` → upload artifact (with hidden files, for `.well-known/`)
+  - job `deploy` (needs ci, `production` environment): `rsync -rc --delete-delay --delay-updates --chmod=D755,F644 dist/ deploy@$VPS_HOST:` → `https://bruchner.dev/version.txt` must equal the SHA
+  - Secrets in the `production` environment, which only `main` and the feature branch may use: `VPS_HOST`, `VPS_SSH_KEY`, `VPS_SSH_KNOWN_HOSTS`. Pin the host key; **never** `StrictHostKeyChecking=no`. Setup in `deploy/README.md` §4
   - Concurrency group with `cancel-in-progress: false`: queue deploys, don't kill one mid-rsync
   - **Rollback** = `workflow_dispatch` with an earlier `ref`. Git is the release history
-- [ ] 4.3 `.github/workflows/pr.yml` on pull_request: build (includes `astro check` + inline guard) + `pnpm test` (Playwright + axe: every page renders, legacy slugs, 404, no third-party requests, no horizontal scroll, skip link, theme toggle) + link check (`lychee`) + Lighthouse CI. No deploy, no secrets
+- [x] 4.3 `.github/workflows/ci.yml` on pull_request (and as deploy's first stage): the build job above plus a report-only `pnpm audit`. No deploy, no secrets. **Lighthouse CI dropped:** it would pull a large, unpinned toolchain into CI for scores the tests already cover (axe, CSP, no third-party requests); Lighthouse stays a manual check (Verification 6)
 
 ## Phase 5 — Cutover
 
-Nothing is merged to `master` during this phase: GitHub Pages builds phhbr.de from `master`, and merging the Astro branch there would make Pages rebuild the live site from Astro source. Pre-cutover deploys run via `workflow_dispatch` from the feature branch.
+Nothing is merged to `master` during this phase: GitHub Pages builds phhbr.de from `master`, and merging the Astro branch there would make Pages rebuild the live site from Astro source. Pre-cutover deploys run on push to the feature branch (see 4.2).
 
 - [ ] 5.1 bruchner.dev A/AAAA (apex + `www`) → VPS. Install `deploy/bruchner.dev.caddy` **without** the phhbr.de block and with `X-Robots-Tag: noindex`. Deploy, verify everything in *Verification* except the phhbr.de items
-- [ ] 5.2 Switch CSP from report-only to enforced; remove `noindex`; verify `robots.txt`, `sitemap-index.xml`, `feed.xml` all emit `bruchner.dev`
+- [ ] 5.2 Launch switch in `bruchner_dev_response_headers` (`deploy/README.md`): CSP from report-only to enforced, remove `noindex`; verify `robots.txt`, `sitemap-index.xml`, `feed.xml` all emit `bruchner.dev`
 - [ ] 5.3 24h before: lower the TTL on phhbr.de's A/AAAA
 - [ ] 5.4 Add the phhbr.de block to the edge Caddy; repoint phhbr.de **A/AAAA only** from the GitHub Pages IPs to the VPS (MX, SPF, DKIM, DMARC, Proton verification untouched). Confirm cert issuance and path-preserving 301s
 - [ ] 5.5 Google Search Console: add bruchner.dev, submit `sitemap-index.xml`, then use **Change of Address** on phhbr.de (requires the 301s from 5.4 to be live)
@@ -159,7 +159,7 @@ Nothing is merged to `master` during this phase: GitHub Pages builds phhbr.de fr
 6. Lighthouse 100/100/100/100 on `/` and `/services`
 7. `curl -sI https://phhbr.de/leaving-linkedin/` → `301`, `Location: https://bruchner.dev/leaving-linkedin/`
 8. Every row of the legacy URL table returns the stated status. Run `lychee` against the old `_site/sitemap.xml` plus the redirect paths
-9. Push to `main` → `https://bruchner.dev/version.txt` shows the new SHA; `workflow_dispatch` of an older ref rolls back
+9. Push to `main` → the deploy job's version check passes; `workflow_dispatch` of an older ref rolls back
 10. On the VPS: `sudo -u deploy -s` fails; `ssh -i <deploy key> deploy@host id` is refused by `rrsync`
 11. `pnpm test` green (includes axe WCAG 2.2 AA on every page in both themes); keyboard-only pass on `/` and `/services`
 12. `pnpm-lock.yaml` is tracked; `dependabot.yml` validates in the repo's *Insights → Dependency graph → Dependabot* tab
