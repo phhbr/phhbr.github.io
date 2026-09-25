@@ -1,5 +1,7 @@
 ---
 import '../styles/global.css';
+import monoFont from '@fontsource-variable/martian-mono/files/martian-mono-latin-wdth-normal.woff2?url';
+import bodyFont from '@fontsource-variable/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-wght-normal.woff2?url';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import { SITE } from '../config';
@@ -11,7 +13,7 @@ interface Props {
 }
 
 const { title, description = SITE.description, noindex = false } = Astro.props;
-const pageTitle = title ? `${title} · ${SITE.title}` : `${SITE.author} · ${SITE.title}`;
+const pageTitle = title ? `${title} | ${SITE.title}` : `${SITE.author} | ${SITE.title}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 
@@ -24,24 +26,31 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     {noindex && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#edf1f5" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0e1620" />
 
     <meta property="og:type" content="website" />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
 
+    <link rel="preload" href={monoFont} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={bodyFont} as="font" type="font/woff2" crossorigin />
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="alternate" type="application/rss+xml" title={SITE.title} href="/feed.xml" />
+    <script is:inline src="/theme.js"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
-    <Nav />
-    <main id="main">
-      <slot />
-    </main>
-    <Footer />
+    <div class="page">
+      <Nav />
+      <main id="main" class="wrap">
+        <slot />
+      </main>
+      <Footer />
+    </div>
   </body>
 </html>

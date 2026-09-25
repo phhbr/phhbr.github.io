@@ -4,72 +4,74 @@ import { LEGAL, SITE } from '../config';
 ---
 
 <BaseLayout title="Privacy policy" description="Privacy policy (Datenschutzerklärung) for bruchner.dev.">
-  <h1>Privacy policy / Datenschutzerklärung</h1>
+  <div class="prose">
+    <h1>Privacy policy / Datenschutzerklärung</h1>
 
-  <section aria-labelledby="controller">
-    <h2 id="controller">Controller</h2>
-    <address>
-      {LEGAL.name}<br />
-      {LEGAL.street}<br />
-      {LEGAL.city}<br />
-      {LEGAL.country}<br />
-      E-mail: {SITE.email}
-    </address>
-  </section>
+    <section aria-labelledby="controller">
+      <h2 id="controller">Controller</h2>
+      <address>
+        {LEGAL.name}<br />
+        {LEGAL.street}<br />
+        {LEGAL.city}<br />
+        {LEGAL.country}<br />
+        E-mail: {SITE.email}
+      </address>
+    </section>
 
-  <section aria-labelledby="summary">
-    <h2 id="summary">In short</h2>
-    <p>
-      This site uses no cookies, no analytics, no tracking and no third-party content. Fonts and all
-      other resources are served from this server. Personal data is only processed where this is
-      technically necessary to deliver the site, or when you contact me.
-    </p>
-  </section>
+    <section aria-labelledby="summary">
+      <h2 id="summary">In short</h2>
+      <p>
+        This site uses no cookies, no analytics, no tracking and no third-party content. Fonts and all
+        other resources are served from this server. Personal data is only processed where this is
+        technically necessary to deliver the site, or when you contact me.
+      </p>
+    </section>
 
-  <section aria-labelledby="hosting">
-    <h2 id="hosting">Hosting and server access</h2>
-    <p>
-      When you open a page, your browser sends technical data to the server, in particular your IP
-      address, the requested URL, date and time, and your browser's user agent. This is necessary to
-      deliver the page and protect the server (Art. 6(1)(f) GDPR). The server does not keep access
-      logs of this data.
-    </p>
-    <p>
-      The server is operated by {LEGAL.hostingProvider}, which processes this data on my behalf under
-      a data processing agreement (Art. 28 GDPR).
-    </p>
-  </section>
+    <section aria-labelledby="hosting">
+      <h2 id="hosting">Hosting and server access</h2>
+      <p>
+        When you open a page, your browser sends technical data to the server, in particular your IP
+        address, the requested URL, date and time, and your browser's user agent. This is necessary to
+        deliver the page and protect the server (Art. 6(1)(f) GDPR). The server does not keep access
+        logs of this data.
+      </p>
+      <p>
+        The server is operated by {LEGAL.hostingProvider}, which processes this data on my behalf under
+        a data processing agreement (Art. 28 GDPR).
+      </p>
+    </section>
 
-  <section aria-labelledby="storage">
-    <h2 id="storage">Local storage</h2>
-    <p>
-      If you switch between light and dark mode, your choice is saved in your browser's local
-      storage. It never leaves your device and you can delete it at any time in your browser settings.
-      This storage is strictly necessary for the function you requested (§ 25 Abs. 2 Nr. 2 TDDDG).
-    </p>
-  </section>
+    <section aria-labelledby="storage">
+      <h2 id="storage">Local storage</h2>
+      <p>
+        If you switch between light and dark mode, your choice is saved in your browser's local
+        storage. It never leaves your device and you can delete it at any time in your browser settings.
+        This storage is strictly necessary for the function you requested (§ 25 Abs. 2 Nr. 2 TDDDG).
+      </p>
+    </section>
 
-  <section aria-labelledby="email">
-    <h2 id="email">Contact by e-mail</h2>
-    <p>
-      If you e-mail me, I process your address and message to answer your enquiry (Art. 6(1)(b) or (f)
-      GDPR) and delete them once they are no longer needed, unless statutory retention periods apply.
-      E-mail is hosted by Proton AG, Route de la Galaise 32, 1228 Plan-les-Ouates, Switzerland, under a
-      data processing agreement. Switzerland has an adequacy decision from the European Commission
-      (Art. 45 GDPR).
-    </p>
-  </section>
+    <section aria-labelledby="email">
+      <h2 id="email">Contact by e-mail</h2>
+      <p>
+        If you e-mail me, I process your address and message to answer your enquiry (Art. 6(1)(b) or (f)
+        GDPR) and delete them once they are no longer needed, unless statutory retention periods apply.
+        E-mail is hosted by Proton AG, Route de la Galaise 32, 1228 Plan-les-Ouates, Switzerland, under a
+        data processing agreement. Switzerland has an adequacy decision from the European Commission
+        (Art. 45 GDPR).
+      </p>
+    </section>
 
-  <section aria-labelledby="rights">
-    <h2 id="rights">Your rights</h2>
-    <p>
-      You have the right to access (Art. 15 GDPR), rectification (Art. 16), erasure (Art. 17),
-      restriction of processing (Art. 18), data portability (Art. 20) and to object to processing
-      based on legitimate interests (Art. 21). To exercise them, e-mail {SITE.email}.
-    </p>
-    <p>
-      You also have the right to lodge a complaint with a supervisory authority (Art. 77 GDPR), for
-      example the Bayerisches Landesamt für Datenschutzaufsicht, Promenade 18, 91522 Ansbach.
-    </p>
-  </section>
+    <section aria-labelledby="rights">
+      <h2 id="rights">Your rights</h2>
+      <p>
+        You have the right to access (Art. 15 GDPR), rectification (Art. 16), erasure (Art. 17),
+        restriction of processing (Art. 18), data portability (Art. 20) and to object to processing
+        based on legitimate interests (Art. 21). To exercise them, e-mail {SITE.email}.
+      </p>
+      <p>
+        You also have the right to lodge a complaint with a supervisory authority (Art. 77 GDPR), for
+        example the Bayerisches Landesamt für Datenschutzaufsicht, Promenade 18, 91522 Ansbach.
+      </p>
+    </section>
+  </div>
 </BaseLayout>

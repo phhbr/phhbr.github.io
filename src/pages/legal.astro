@@ -4,81 +4,83 @@ import { LEGAL, SITE } from '../config';
 ---
 
 <BaseLayout title="Legal notice" description="Legal notice (Impressum) for bruchner.dev.">
-  <h1>Legal notice / Impressum</h1>
+  <div class="prose">
+    <h1>Legal notice / Impressum</h1>
 
-  <section aria-labelledby="provider">
-    <h2 id="provider">Service provider (§ 5 DDG)</h2>
-    <address>
-      {LEGAL.name}<br />
-      {LEGAL.street}<br />
-      {LEGAL.city}<br />
-      {LEGAL.country}
-    </address>
-  </section>
+    <section aria-labelledby="provider">
+      <h2 id="provider">Service provider (§ 5 DDG)</h2>
+      <address>
+        {LEGAL.name}<br />
+        {LEGAL.street}<br />
+        {LEGAL.city}<br />
+        {LEGAL.country}
+      </address>
+    </section>
 
-  <section aria-labelledby="contact">
-    <h2 id="contact">Contact</h2>
-    <p>
-      E-mail: {SITE.email}<br />
-      Phone: {LEGAL.phone}
-    </p>
-  </section>
+    <section aria-labelledby="contact">
+      <h2 id="contact">Contact</h2>
+      <p>
+        E-mail: {SITE.email}<br />
+        Phone: {LEGAL.phone}
+      </p>
+    </section>
 
-  {
-    LEGAL.vatId && (
-      <section aria-labelledby="vat">
-        <h2 id="vat">VAT identification number</h2>
-        <p>
-          VAT ID according to § 27a of the German VAT Act (UStG): {LEGAL.vatId}
-        </p>
-      </section>
-    )
-  }
+    {
+      LEGAL.vatId && (
+        <section aria-labelledby="vat">
+          <h2 id="vat">VAT identification number</h2>
+          <p>
+            VAT ID according to § 27a of the German VAT Act (UStG): {LEGAL.vatId}
+          </p>
+        </section>
+      )
+    }
 
-  <section aria-labelledby="responsible">
-    <h2 id="responsible">Responsible for content (§ 18 Abs. 2 MStV)</h2>
-    <address>
-      {LEGAL.name}<br />
-      {LEGAL.street}<br />
-      {LEGAL.city}
-    </address>
-  </section>
+    <section aria-labelledby="responsible">
+      <h2 id="responsible">Responsible for content (§ 18 Abs. 2 MStV)</h2>
+      <address>
+        {LEGAL.name}<br />
+        {LEGAL.street}<br />
+        {LEGAL.city}
+      </address>
+    </section>
 
-  <section aria-labelledby="liability-content">
-    <h2 id="liability-content">Liability for content</h2>
-    <p>
-      The content of this site has been created with the greatest of care. I cannot, however,
-      guarantee that it is accurate, complete or up to date. As a service provider I am responsible
-      for my own content on this site under § 7 Abs. 1 DDG. Under §§ 8 to 10 DDG I am not obliged to
-      monitor third-party information transmitted or stored, or to look for circumstances that
-      indicate illegal activity. This does not affect obligations to remove or block the use of
-      information under general law. Liability in this respect only begins when I become aware of a
-      specific infringement; I will remove such content as soon as I do.
-    </p>
-  </section>
+    <section aria-labelledby="liability-content">
+      <h2 id="liability-content">Liability for content</h2>
+      <p>
+        The content of this site has been created with the greatest of care. I cannot, however,
+        guarantee that it is accurate, complete or up to date. As a service provider I am responsible
+        for my own content on this site under § 7 Abs. 1 DDG. Under §§ 8 to 10 DDG I am not obliged to
+        monitor third-party information transmitted or stored, or to look for circumstances that
+        indicate illegal activity. This does not affect obligations to remove or block the use of
+        information under general law. Liability in this respect only begins when I become aware of a
+        specific infringement; I will remove such content as soon as I do.
+      </p>
+    </section>
 
-  <section aria-labelledby="liability-links">
-    <h2 id="liability-links">Liability for links</h2>
-    <p>
-      This site links to external websites whose content I have no control over, so I cannot accept
-      any liability for it. The respective provider or operator is always responsible for the content
-      of linked pages. Linked pages were checked for possible legal violations when the link was set,
-      and no illegal content was apparent at that time. Permanent monitoring of linked pages is not
-      reasonable without concrete evidence of an infringement. I will remove such links as soon as I
-      become aware of an infringement.
-    </p>
-  </section>
+    <section aria-labelledby="liability-links">
+      <h2 id="liability-links">Liability for links</h2>
+      <p>
+        This site links to external websites whose content I have no control over, so I cannot accept
+        any liability for it. The respective provider or operator is always responsible for the content
+        of linked pages. Linked pages were checked for possible legal violations when the link was set,
+        and no illegal content was apparent at that time. Permanent monitoring of linked pages is not
+        reasonable without concrete evidence of an infringement. I will remove such links as soon as I
+        become aware of an infringement.
+      </p>
+    </section>
 
-  <section aria-labelledby="copyright">
-    <h2 id="copyright">Copyright</h2>
-    <p>
-      Content created by the site operator is subject to German copyright law. Reproduction,
-      editing, distribution and any kind of use beyond the limits of copyright law require the
-      written consent of the author. Third-party contributions are marked as such. If you become
-      aware of a copyright infringement, please let me know and I will remove the content
-      immediately.
-    </p>
-  </section>
+    <section aria-labelledby="copyright">
+      <h2 id="copyright">Copyright</h2>
+      <p>
+        Content created by the site operator is subject to German copyright law. Reproduction,
+        editing, distribution and any kind of use beyond the limits of copyright law require the
+        written consent of the author. Third-party contributions are marked as such. If you become
+        aware of a copyright infringement, please let me know and I will remove the content
+        immediately.
+      </p>
+    </section>
 
-  <p>Information on data protection: <a href="/privacy/">privacy policy</a>.</p>
+    <p>Information on data protection: <a href="/privacy/">privacy policy</a>.</p>
+  </div>
 </BaseLayout>

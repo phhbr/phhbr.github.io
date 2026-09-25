@@ -4,7 +4,7 @@ import { getCollection, render } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { formatDate } from '../utils/date';
 
-// Archived posts, served at their original Jekyll paths (`/:title/`).
+// Posts, served at their original Jekyll paths (`/:title/`).
 export const getStaticPaths = (async () => {
   const posts = await getCollection('posts');
   return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
@@ -15,12 +15,31 @@ const { Content } = await render(post);
 ---
 
 <BaseLayout title={post.data.title} description={post.data.description}>
-  <article>
-    <p class="kicker">
-      {post.data.archived && 'archived post · '}<time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
-    </p>
-    <h1>{post.data.title}</h1>
+  <article class="prose">
+    <header>
+      <h1>{post.data.title}</h1>
+      <p class="meta">
+        <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+        {post.data.archived && ', archived'}
+      </p>
+    </header>
     <Content />
   </article>
-  <p><a href="/writing/">← All posts</a></p>
+  <p class="back"><a href="/writing/">All posts</a></p>
 </BaseLayout>
+
+<style>
+  header {
+    margin: var(--space-5) 0 var(--space-4);
+  }
+
+  header h1 {
+    margin-bottom: var(--space-1);
+  }
+
+  .back {
+    margin-top: var(--space-5);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+</style>

@@ -1,37 +1,72 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import TechStack from '../components/TechStack.astro';
+import Testimonial from '../components/Testimonial.astro';
+import { testimonials } from '../data/cv';
 import { SITE } from '../config';
 
 const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
 ---
 
 <BaseLayout>
-  <section aria-labelledby="hero">
-    <p class="kicker">freelance software engineer · Germany · remote</p>
-    <h1 id="hero">{SITE.author}</h1>
-    <p>{SITE.description}</p>
-    <p>Available for new projects.</p>
-  </section>
+  <Hero />
 
   <section aria-labelledby="services">
-    <h2 id="services">Services</h2>
-    <ul class="plain-list">
+    <h2 id="services">What I do</h2>
+    <ul class="ruled">
       {
         services.map(({ data }) => (
           <li>
-            <strong>{data.title}</strong>: {data.summary}
+            <span class="label">{data.title}</span>
+            <span>{data.summary}</span>
           </li>
         ))
       }
     </ul>
-    <p><a href="/services/">All services and how I work</a></p>
+    <p class="more"><a href="/services/">Services in detail</a></p>
   </section>
 
-  <section aria-labelledby="contact">
-    <h2 id="contact">Get in touch</h2>
-    <p>
-      Tell me about your project: <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
-    </p>
+  <section aria-labelledby="stack">
+    <h2 id="stack">Tools I work with</h2>
+    <TechStack />
+  </section>
+
+  <section aria-labelledby="feedback">
+    <h2 id="feedback">What colleagues say</h2>
+    <div class="quotes">
+      {testimonials.map((t) => <Testimonial {...t} />)}
+    </div>
+  </section>
+
+  <section class="closing" aria-labelledby="contact">
+    <h2 id="contact">Have a project in mind?</h2>
+    <p>Tell me what you're building and where you're stuck.</p>
+    <p><a class="button" href={`mailto:${SITE.email}`}>Email {SITE.email}</a></p>
   </section>
 </BaseLayout>
+
+<style>
+  .more {
+    margin-top: var(--space-2);
+  }
+
+  .quotes {
+    display: grid;
+    gap: var(--space-4);
+    max-width: var(--measure);
+  }
+
+  .closing {
+    margin-top: var(--space-6);
+    padding: var(--space-4) var(--space-3);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    background: var(--surface);
+  }
+
+  .closing h2 {
+    margin-top: 0;
+  }
+</style>

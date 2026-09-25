@@ -1,0 +1,96 @@
+import { expect, test } from '@playwright/test';
+
+const pages = [
+  { path: '/', heading: 'Philipp Bruchner' },
+  { path: '/services/', heading: 'Services' },
+  { path: '/cv/', heading: 'Curriculum vitae' },
+  { path: '/writing/', heading: 'Writing' },
+  { path: '/relaunch/', heading: 'new name, new site' },
+  { path: '/legal/', heading: 'Legal notice / Impressum' },
+  { path: '/privacy/', heading: 'Privacy policy / Datenschutzerklärung' },
+];
+
+// Posts from the Jekyll site must keep their URLs.
+const legacyPosts = ['/hello-world/', '/still-alive/', '/freelance-availability/', '/leaving-linkedin/'];
+
+for (const { path, heading } of pages) {
+  test(`${path} renders with one h1 and no console errors`, async ({ page }) => {
+    const errors: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error') errors.push(message.text());
+    });
+
+    const response = await page.goto(path);
+    expect(response?.status()).toBe(200);
+    await expect(page.locator('h1')).toHaveCount(1);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(heading);
+    expect(errors).toEqual([]);
+  });
+}
+
+for (const path of legacyPosts) {
+  test(`legacy post ${path} is still served`, async ({ page }) => {
+    const response = await page.goto(path);
+    expect(response?.status()).toBe(200);
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  });
+}
+
+test('unknown paths show the 404 page', async ({ page }) => {
+  const response = await page.goto('/does-not-exist/');
+  expect(response?.status()).toBe(404);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Page not found');
+});
+
+test('home page does not scroll horizontally', async ({ page }) => {
+  await page.goto('/');
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(0);
+});
+
+test('no request leaves the site', async ({ page, baseURL }) => {
+  const foreign: string[] = [];
+  page.on('request', (request) => {
+    const url = request.url();
+    if (!url.startsWith(baseURL!) && !url.startsWith('data:')) foreign.push(url);
+  });
+  await page.goto('/');
+  await page.waitForLoadState('networkidle');
+  expect(foreign).toEqual([]);
+});
+
+test('legal notice shows e-mail and phone as plain text', async ({ page }) => {
+  await page.goto('/legal/');
+  const contact = page.locator('#contact + p');
+  await expect(contact).toContainText(/E-mail: \S+@\S+/);
+  await expect(contact).toContainText(/Phone: \+49/);
+  await expect(contact.locator('a')).toHaveCount(0);
+});
+
+test('skip link is the first focusable element and targets main', async ({ page }) => {
+  await page.goto('/');
+  await page.keyboard.press('Tab');
+  const skip = page.getByRole('link', { name: 'Skip to content' });
+  await expect(skip).toBeFocused();
+  await expect(skip).toHaveAttribute('href', '#main');
+});
+
+test.describe('theme toggle', () => {
+  test.use({ colorScheme: 'light' });
+
+  test('switches theme and remembers the choice', async ({ page }) => {
+    await page.goto('/');
+    const toggle = page.getByRole('button', { name: 'Dark mode' });
+    await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+
+    await page.reload();
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await expect(page.getByRole('button', { name: 'Dark mode' })).toHaveAttribute('aria-pressed', 'true');
+  });
+});

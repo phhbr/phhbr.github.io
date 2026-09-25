@@ -1,0 +1,37 @@
+---
+const stack = [
+  'TypeScript',
+  'Angular',
+  'React',
+  'Vue',
+  'Web Components',
+  'Node.js',
+  'GraphQL',
+  'GitLab CI/CD',
+  'Kubernetes',
+];
+---
+
+<ul class="stack">
+  {stack.map((item) => <li>{item}</li>)}
+</ul>
+
+<style>
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    padding: 0.3rem 0.6rem;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--surface);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+</style>
