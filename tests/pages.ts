@@ -8,5 +8,5 @@ export const pages = [
   { path: '/privacy/', heading: 'Privacy policy / Datenschutzerklärung' },
 ];
 
-// Posts from the Jekyll site must keep their URLs.
-export const legacyPosts = ['/hello-world/', '/still-alive/', '/freelance-availability/', '/leaving-linkedin/'];
+// Older posts keep their original URLs, since links to them exist elsewhere.
+export const archivedPosts = ['/hello-world/', '/still-alive/', '/freelance-availability/', '/leaving-linkedin/'];

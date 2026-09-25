@@ -25,5 +25,3 @@ Dependencies are only installed once a release is at least 5 days old (`minimumR
 - `tests/`: Playwright smoke tests, axe accessibility checks and a CSP test (desktop and mobile)
 - `deploy/`: edge Caddy config, its Docker test, and the server/GitHub setup ([deploy/README.md](deploy/README.md))
 - `.github/workflows/`: CI on pull requests; deploy on push to `main` (rsync to the VPS)
-
-The migration from the former Jekyll site at phhbr.de is tracked in [docs/migration-plan.md](docs/migration-plan.md).

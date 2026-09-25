@@ -1,26 +1,14 @@
-# Edge Caddy site blocks for bruchner.dev (migration plan 4.1).
+# Edge Caddy site blocks for bruchner.dev.
 #
-# Applied by hand on the host, never by CI: copy both deploy/*.caddy files to
-# /etc/caddy/sites/, import this file from the main Caddyfile, then
-# `caddy validate` and `systemctl reload caddy`. See deploy/README.md.
-#
+# Applied by hand on the host, never by CI: see deploy/README.md.
 # No `log` directive: the site keeps no access logs, as /privacy/ states.
 
 import security-headers.caddy
 
-# Headers for every response, including error pages (handle_errors runs a
-# separate route that does not inherit them). Live since plan 5.2: enforced CSP,
-# indexable. (Before launch this used Content-Security-Policy-Report-Only plus
-# `header X-Robots-Tag "noindex"`.)
-(bruchner_dev_response_headers) {
-	import bruchner_dev_headers Content-Security-Policy
-}
-
 bruchner.dev {
 	root * /srv/bruchner.dev/site
 	encode zstd gzip
-
-	import bruchner_dev_response_headers
+	import bruchner_dev_headers
 
 	# Hashed build assets never change; everything else revalidates.
 	@immutable path /_astro/*
@@ -28,7 +16,7 @@ bruchner.dev {
 	@revalidate not path /_astro/*
 	header @revalidate Cache-Control "no-cache"
 
-	# Jekyll URLs that no longer exist (legacy URL table in the plan).
+	# Old URLs that no longer exist.
 	@resume path /resume /resume/
 	redir @resume /cv/ permanent
 	@home path /about /about/ /notes /notes/ /thanks /thanks/
@@ -41,8 +29,9 @@ bruchner.dev {
 
 	file_server
 
+	# handle_errors runs a separate route that does not inherit the headers above.
 	handle_errors 404 {
-		import bruchner_dev_response_headers
+		import bruchner_dev_headers
 		header Cache-Control "no-cache"
 		rewrite * /404.html
 		file_server
@@ -53,8 +42,8 @@ www.bruchner.dev {
 	redir https://bruchner.dev{uri} permanent
 }
 
-# The old domain (plan 5.4): every path redirects to the same path here, and
-# legacy Jekyll paths then hit the redirects above.
+# The previous domain: every path redirects to the same path here, where the
+# old-URL redirects above take over.
 phhbr.de, www.phhbr.de {
 	redir https://bruchner.dev{uri} permanent
 }

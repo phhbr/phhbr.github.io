@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { legacyPosts, pages } from './pages';
+import { archivedPosts, pages } from './pages';
 
 for (const { path, heading } of pages) {
   test(`${path} renders with one h1 and no console errors`, async ({ page }) => {
@@ -16,8 +16,8 @@ for (const { path, heading } of pages) {
   });
 }
 
-for (const path of legacyPosts) {
-  test(`legacy post ${path} is still served`, async ({ page }) => {
+for (const path of archivedPosts) {
+  test(`archived post ${path} is served at its original URL`, async ({ page }) => {
     const response = await page.goto(path);
     expect(response?.status()).toBe(200);
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
@@ -25,7 +25,7 @@ for (const path of legacyPosts) {
 }
 
 test('external links do not leak the opener or referrer', async ({ page, baseURL }) => {
-  for (const path of [...pages.map(({ path }) => path), ...legacyPosts]) {
+  for (const path of [...pages.map(({ path }) => path), ...archivedPosts]) {
     await page.goto(path);
     for (const link of await page.locator('a[href^="http"]').all()) {
       const href = (await link.getAttribute('href'))!;

@@ -1,18 +1,43 @@
 # Deploying bruchner.dev
 
-CI builds the site and rsyncs `dist/` to the VPS. The existing edge Caddy serves it
+CI builds the site and rsyncs `dist/` to the VPS. The edge Caddy on the VPS serves it
 and owns TLS, headers and redirects. The Caddy config in this folder is applied
 **by hand**: CI can only write static files into one directory.
 
 | File | Purpose |
 |---|---|
 | `security-headers.caddy` | CSP, HSTS and the other response headers (snippet `bruchner_dev_headers`) |
-| `bruchner.dev.caddy` | Site blocks: `bruchner.dev`, `www` redirect, legacy URL redirects, caching, 404 |
+| `bruchner.dev.caddy` | Site blocks: `bruchner.dev`, the `www` and `phhbr.de` redirects, old-URL redirects, caching, 404 |
 | `test-caddy.sh` | Runs both files in a Caddy container against `./dist` and checks everything (also runs in CI) |
 
-The commands below assume Debian or Ubuntu with Caddy installed from its package.
+## Deploying and rolling back
 
-## 1. Deploy user and directory (plan 0.3)
+- **Deploy:** push to `main`. The workflow builds, tests, uploads, and then checks that
+  `https://bruchner.dev/version.txt` shows the new commit.
+- **Roll back:** Actions → Deploy → Run workflow, with an earlier commit as `ref`.
+
+## Updating the Caddy config
+
+Whenever `deploy/*.caddy` changes: run `./deploy/test-caddy.sh`, commit, then copy the
+files to the server and reload. The server has no clone of this repo.
+
+```bash
+# Locally, from the repo root:
+scp deploy/security-headers.caddy deploy/bruchner.dev.caddy <you>@<vps>:/tmp/
+
+# On the server:
+sudo mv /tmp/security-headers.caddy /tmp/bruchner.dev.caddy /etc/caddy/sites/
+sudo chown root:root /etc/caddy/sites/*.caddy
+sudo caddy validate --config /etc/caddy/Caddyfile && sudo systemctl reload caddy
+```
+
+Don't add a `log` directive: the privacy policy says the site keeps no access logs.
+
+## Setting up a server from scratch
+
+The commands assume Debian or Ubuntu with Caddy installed from its package.
+
+### Deploy user and directory
 
 The `deploy` user has no password and no sudo, and is not in the `docker` group.
 It needs a real shell only because sshd runs the forced command through it.
@@ -22,97 +47,57 @@ sudo apt install rsync            # provides /usr/bin/rrsync (rsync 3.2.4+)
 sudo useradd --create-home --shell /bin/sh deploy
 sudo passwd --lock deploy
 sudo install -d -o deploy -g deploy -m 755 /srv/bruchner.dev/site
+sudo install -d -o deploy -g deploy -m 700 /home/deploy/.ssh
 ```
 
-## 2. Deploy key (plan 0.4)
+### Deploy key
 
-Create the key on your own machine, not on the server:
+Create the key on your own machine, then allow it exactly one thing: rsync into the
+site directory (`restrict` turns off forwarding, PTY and `~/.ssh/rc`). Run this
+**locally**, so `$(cat …)` reads the local `.pub` file; run on the server, it writes an
+empty key and sshd falls back to password auth.
 
 ```bash
 ssh-keygen -t ed25519 -N '' -C 'github-actions deploy bruchner.dev' -f bruchner-dev-deploy
-```
 
-Allow it to do exactly one thing, rsync into the site directory (`restrict` turns
-off forwarding, PTY and `~/.ssh/rc`). **Run this on your local machine**, in the
-directory containing `bruchner-dev-deploy.pub` — the `$(cat ...)` must expand
-locally, so pipe the result over SSH to your own admin account rather than
-running the whole thing on the server:
-
-```bash
-sudo install -d -o deploy -g deploy -m 700 /home/deploy/.ssh   # on the server first
-
-ssh <you>@<vps> "echo 'command=\"rrsync /srv/bruchner.dev/site\",restrict $(cat bruchner-dev-deploy.pub)' \
+ssh -t <you>@<vps> "echo 'command=\"rrsync /srv/bruchner.dev/site\",restrict $(cat bruchner-dev-deploy.pub)' \
   | sudo tee /home/deploy/.ssh/authorized_keys > /dev/null \
   && sudo chown deploy:deploy /home/deploy/.ssh/authorized_keys \
   && sudo chmod 600 /home/deploy/.ssh/authorized_keys"
 ```
 
-Running the `echo ... $(cat bruchner-dev-deploy.pub)` part directly on the server
-instead silently writes an empty key (the `.pub` file isn't there), leaving
-`authorized_keys` as just the bare `command=...,restrict` prefix — sshd then
-falls through to password auth instead of failing outright.
-
-Check it from your machine. The first command must be refused (no shell), the
-second must list the directory:
+Check it. The first command must be refused (no shell), the second must list the directory:
 
 ```bash
 ssh -i bruchner-dev-deploy deploy@<vps> id
 rsync -e "ssh -i bruchner-dev-deploy" deploy@<vps>:
 ```
 
-**On macOS**, `/usr/bin/rsync` is Apple's `openrsync` (BSD-licensed, protocol 29),
-not GNU rsync — `rrsync` validates GNU rsync's argument encoding and rejects
-openrsync's with "invalid rsync-command syntax". This only affects testing from
-a Mac; the GitHub Actions runner has real GNU rsync. Install it and use it
-explicitly for the check above:
+On macOS, `/usr/bin/rsync` is Apple's `openrsync`, which `rrsync` rejects with "invalid
+rsync-command syntax". Use GNU rsync for the check (`brew install rsync`, then
+`$(brew --prefix rsync)/bin/rsync …`). The GitHub Actions runner already has GNU rsync.
 
-```bash
-brew install rsync
-$(brew --prefix rsync)/bin/rsync -e "ssh -i bruchner-dev-deploy" deploy@<vps>:
-```
+### Caddy
 
-## 3. Caddy (plan 4.1)
-
-`deploy/*.caddy` are paths in this repo, on your **local** machine — the server
-doesn't have this repo cloned. Copy them up first:
-
-```bash
-# Locally, from the repo root:
-scp deploy/security-headers.caddy deploy/bruchner.dev.caddy <you>@<vps>:/tmp/
-
-# On the server (or piped over ssh -t from local, like step 2):
-sudo install -d /etc/caddy/sites
-sudo mv /tmp/security-headers.caddy /tmp/bruchner.dev.caddy /etc/caddy/sites/
-sudo chown root:root /etc/caddy/sites/*.caddy
-```
-
-Add one line to `/etc/caddy/Caddyfile`, after any global options block:
+Copy the files as in *Updating the Caddy config* (after `sudo install -d /etc/caddy/sites`),
+then add one line to `/etc/caddy/Caddyfile`, after any global options block, and reload:
 
 ```caddy
 import sites/bruchner.dev.caddy
 ```
 
-```bash
-caddy validate --config /etc/caddy/Caddyfile
-sudo systemctl reload caddy
-```
-
 If Caddy runs in a container, mount `/srv/bruchner.dev/site` into it read-only at the same path.
 
-Don't add a `log` directive: the privacy policy says the site keeps no access logs.
+### GitHub environment and secrets
 
-## 4. GitHub environment and secrets (plan 4.2)
-
-The deploy job uses the `production` environment. Only `main`, and the feature
-branch until it is merged, may deploy to it:
+The deploy job uses the `production` environment, which only `main` may deploy to:
 
 ```bash
-REPO=phhbr/phhbr.github.io
+REPO=phhbr/bruchner.dev
 gh api -X PUT repos/$REPO/environments/production --input - <<'JSON'
 {"deployment_branch_policy": {"protected_branches": false, "custom_branch_policies": true}}
 JSON
 gh api -X POST repos/$REPO/environments/production/deployment-branch-policies -f name=main
-gh api -X POST repos/$REPO/environments/production/deployment-branch-policies -f name=feat/astro-bruchner-dev
 ```
 
 Pin the host key. Compare what `ssh-keyscan` returns with the fingerprint shown **on the
@@ -121,39 +106,9 @@ server** (`ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub`) before trusting it
 ```bash
 ssh-keyscan -t ed25519 <vps> > known_hosts
 ssh-keygen -lf known_hosts
-```
 
-```bash
 gh secret set VPS_HOST --env production --repo $REPO --body '<vps>'
 gh secret set VPS_SSH_KEY --env production --repo $REPO < bruchner-dev-deploy
 gh secret set VPS_SSH_KNOWN_HOSTS --env production --repo $REPO < known_hosts
-rm bruchner-dev-deploy known_hosts   # the private key now lives only in GitHub
-```
-
-## Deploying and rolling back
-
-- **Deploy:** push to `main` (and to the feature branch until 6.3). The workflow checks
-  that `https://bruchner.dev/version.txt` shows the new commit.
-- **Roll back:** Actions → Deploy → Run workflow, with an earlier commit as `ref`.
-  This only works once `deploy.yml` is on the default branch.
-
-## Launch switch (plan 5.2)
-
-Done: `bruchner_dev_response_headers` in `bruchner.dev.caddy` now sends the enforced
-`Content-Security-Policy` and no `X-Robots-Tag`. To go back to pre-launch mode, switch it
-to `Content-Security-Policy-Report-Only` and add `header X-Robots-Tag "noindex"`.
-
-## Updating the Caddy config
-
-Whenever `deploy/*.caddy` changes: run `./deploy/test-caddy.sh`, commit, then copy the
-changed file to the server and reload:
-
-```bash
-# Locally, from the repo root:
-scp deploy/bruchner.dev.caddy <you>@<vps>:/tmp/
-
-# On the server:
-sudo mv /tmp/bruchner.dev.caddy /etc/caddy/sites/
-sudo chown root:root /etc/caddy/sites/bruchner.dev.caddy
-sudo caddy validate --config /etc/caddy/Caddyfile && sudo systemctl reload caddy
+rm bruchner-dev-deploy bruchner-dev-deploy.pub known_hosts   # the private key now lives only in GitHub
 ```

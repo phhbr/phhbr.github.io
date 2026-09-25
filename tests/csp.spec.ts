@@ -1,10 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
-import { legacyPosts, pages } from './pages';
+import { archivedPosts, pages } from './pages';
 
 // The exact policy the server sends, read from the Caddy snippet.
 const snippet = readFileSync(new URL('../deploy/security-headers.caddy', import.meta.url), 'utf8');
-const policy = snippet.match(/\{args\[0\]\} "([^"]+)"/)?.[1];
+const policy = snippet.match(/Content-Security-Policy "([^"]+)"/)?.[1];
 
 // Serve every page with the production CSP header and record violations.
 async function withCsp(page: Page) {
@@ -30,7 +30,7 @@ test('policy is found in the Caddy snippet', () => {
   expect(policy).toContain("default-src 'none'");
 });
 
-for (const path of [...pages.map(({ path }) => path), ...legacyPosts]) {
+for (const path of [...pages.map(({ path }) => path), ...archivedPosts]) {
   test(`${path} works under the production CSP`, async ({ page }) => {
     await withCsp(page);
     await page.goto(path);

@@ -1,4 +1,4 @@
-// CV as data, rendered by src/pages/cv.astro. Dates are years only (open decision 1).
+// CV as data, rendered by src/pages/cv.astro. Dates are years only, on purpose.
 
 export interface Role {
   period: string;
@@ -29,8 +29,8 @@ export const education: Role[] = [
   { period: '2009 – 2012', title: 'Business Information Technology, B.Sc. (HS Regensburg)' },
 ];
 
-// Three varied quotes, anonymised as role + company (open decision 3). Each is an
-// excerpt: the near-identical closing line ("Any team would be lucky…") is omitted.
+// Anonymised as role + company. Each is an excerpt: the near-identical closing
+// line ("Any team would be lucky…") is omitted.
 export const testimonials: Testimonial[] = [
   {
     quote:

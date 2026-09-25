@@ -1,4 +1,4 @@
-// Fails the build if any page ships inline script or style (plan 3.3).
+// Fails the build if any page ships inline script or style.
 // The CSP is `script-src 'self'; style-src 'self'` with no hashes, so inline
 // code would be blocked in production; catch it here instead.
 import { readFileSync, readdirSync } from 'node:fs';

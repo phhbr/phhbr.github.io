@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Runs deploy/bruchner.dev.caddy in a Caddy container against ./dist and checks
-# headers, caching, legacy redirects and the 404 page. Needs Docker and a build
+# headers, caching, redirects and the 404 page. Needs Docker and a build
 # (`pnpm build`). Uses Caddy's internal CA instead of Let's Encrypt.
 set -euo pipefail
 
@@ -49,15 +49,11 @@ for _ in $(seq 1 30); do req bruchner.dev / | grep -q '^HTTP' && break; sleep 1;
 
 home=$(req bruchner.dev /)
 check "home is 200" has "$home" '^HTTP/[0-9.]* 200'
-check "CSP" has "$home" "^content-security-policy\(-report-only\)\?: default-src 'none'"
+check "CSP" has "$home" "^content-security-policy: default-src 'none'"
 check "HSTS" has "$home" '^strict-transport-security: max-age=63072000; includeSubDomains; preload'
 check "nosniff" has "$home" '^x-content-type-options: nosniff'
 check "frame denial" has "$home" '^x-frame-options: DENY'
-if grep -Eq '^[[:space:]]*header X-Robots-Tag' deploy/bruchner.dev.caddy; then
-  check "noindex before launch" has "$home" '^x-robots-tag: noindex'
-else
-  check "indexable after launch" lacks "$home" '^x-robots-tag:'
-fi
+check "indexable" lacks "$home" '^x-robots-tag:'
 check "HTML revalidates" has "$home" '^cache-control: no-cache'
 check "no Server header" lacks "$home" '^server:'
 
@@ -80,7 +76,7 @@ done
 
 missing=$(req bruchner.dev /does-not-exist/)
 check "unknown path is 404" has "$missing" '^HTTP/[0-9.]* 404'
-check "404 keeps security headers" has "$missing" "^content-security-policy\(-report-only\)\?:"
+check "404 keeps security headers" has "$missing" "^content-security-policy:"
 check "404 serves the 404 page" grep -q 'Page not found' <<<"$(curl -sk --resolve "bruchner.dev:$PORT:127.0.0.1" "https://bruchner.dev:$PORT/does-not-exist/")"
 
 www=$(req www.bruchner.dev /cv/)

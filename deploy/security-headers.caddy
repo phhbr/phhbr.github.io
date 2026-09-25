@@ -1,14 +1,8 @@
-# Security headers for bruchner.dev (migration plan 3.2–3.5), imported by the
-# site block. The argument picks the CSP header name, so the policy can ship in
-# report-only mode first:
-#
-#   import bruchner_dev_headers Content-Security-Policy-Report-Only
-#   import bruchner_dev_headers Content-Security-Policy
-#
-# tests/csp.spec.ts reads the policy from this file and runs every page under it.
+# Security headers for bruchner.dev, imported by bruchner.dev.caddy.
+# tests/csp.spec.ts reads the CSP from this file and runs every page under it.
 (bruchner_dev_headers) {
 	header {
-		{args[0]} "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
+		Content-Security-Policy "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"
 		Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
 		X-Content-Type-Options "nosniff"
 		Referrer-Policy "strict-origin-when-cross-origin"

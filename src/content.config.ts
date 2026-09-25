@@ -6,7 +6,7 @@ const posts = defineCollection({
   loader: glob({
     pattern: '*.md',
     base: './src/content/posts',
-    // `2022-03-01-still-alive.md` → `still-alive`, matching the Jekyll `/:title/` URLs.
+    // `2022-03-01-still-alive.md` → `still-alive`, matching the posts' original URLs.
     generateId: ({ entry }) => entry.replace(/^\d{4}-\d{2}-\d{2}-/, '').replace(/\.md$/, ''),
   }),
   schema: z.object({

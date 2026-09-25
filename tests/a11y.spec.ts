@@ -1,8 +1,8 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
-import { legacyPosts, pages } from './pages';
+import { archivedPosts, pages } from './pages';
 
-const paths = [...pages.map(({ path }) => path), ...legacyPosts, '/does-not-exist/'];
+const paths = [...pages.map(({ path }) => path), ...archivedPosts, '/does-not-exist/'];
 
 // WCAG 2.2 A and AA, the level the site claims.
 const tags = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22a', 'wcag22aa'];

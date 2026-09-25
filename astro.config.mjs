@@ -10,7 +10,7 @@ export default defineConfig({
   site: SITE,
   trailingSlash: 'always',
   build: {
-    // Keep all CSS external so the CSP can stay `style-src 'self'` (plan 3.2).
+    // Keep all CSS external so the CSP can stay `style-src 'self'`.
     inlineStylesheets: 'never',
   },
   markdown: {

@@ -1,6 +1,6 @@
 import { defineHastPlugin } from 'satteri';
 
-// Adds rel="noopener noreferrer" to Markdown links that leave the site (plan 3.11).
+// Adds rel="noopener noreferrer" to Markdown links that leave the site.
 export const externalLinks = (site: string) =>
   defineHastPlugin({
     name: 'external-links',

@@ -4,7 +4,7 @@ import { getCollection, render } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { formatDate } from '../utils/date';
 
-// Posts, served at their original Jekyll paths (`/:title/`).
+// Posts, served at their original paths (`/:slug/`).
 export const getStaticPaths = (async () => {
   const posts = await getCollection('posts');
   return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));

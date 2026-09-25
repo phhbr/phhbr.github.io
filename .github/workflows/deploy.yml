@@ -1,10 +1,9 @@
-# Build, test and rsync the site to the VPS (migration plan 4.2).
+# Build, test and rsync the site to the VPS.
 name: Deploy
 
 on:
   push:
-    # The feature branch deploys until it is merged into main (plan 5.1, 6.3):
-    # workflow_dispatch only works once this file is on the default branch.
+    # TODO: drop feat/astro-bruchner-dev once it is merged into main.
     branches: [main, feat/astro-bruchner-dev]
   workflow_dispatch:
     inputs:
