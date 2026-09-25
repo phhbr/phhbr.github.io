@@ -19,7 +19,7 @@ there are different sections available
 
 ##### sections
 
-- [blog](/writing/) blog posts
-- [resume](/cv/) resume of mine
+- [blog](/en/writing/) blog posts
+- [resume](/en/cv/) resume of mine
 
 #### throw EOF

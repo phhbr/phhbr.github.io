@@ -1,0 +1,87 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { LEGAL, SITE } from '../../config';
+import { routes } from '../../i18n';
+---
+
+<BaseLayout
+  alternates={routes.privacy}
+  title="Datenschutzerklärung"
+  description="Datenschutzerklärung von bruchner.dev: keine Cookies, keine Analyse, keine Drittanbieter. Welche Server- und E-Mail-Daten verarbeitet werden, und Ihre Rechte."
+>
+  <div class="prose">
+    <h1>Datenschutzerklärung</h1>
+
+    <section aria-labelledby="controller">
+      <h2 id="controller">Verantwortlicher</h2>
+      <address>
+        {LEGAL.name}<br />
+        {LEGAL.street}<br />
+        {LEGAL.city}<br />
+        {LEGAL.country.de}<br />
+        E-Mail: {SITE.email}
+      </address>
+    </section>
+
+    <section aria-labelledby="summary">
+      <h2 id="summary">Kurz gesagt</h2>
+      <p>
+        Diese Website verwendet keine Cookies, keine Analyse, kein Tracking und keine Inhalte Dritter.
+        Schriften und alle anderen Ressourcen werden von diesem Server ausgeliefert. Personenbezogene
+        Daten werden nur verarbeitet, soweit das für die Auslieferung der Website technisch nötig ist
+        oder Sie mich kontaktieren.
+      </p>
+    </section>
+
+    <section aria-labelledby="hosting">
+      <h2 id="hosting">Hosting und Serverzugriffe</h2>
+      <p>
+        Beim Aufruf einer Seite übermittelt Ihr Browser technische Daten an den Server, insbesondere Ihre
+        IP-Adresse, die aufgerufene URL, Datum und Uhrzeit sowie die Kennung Ihres Browsers (User-Agent).
+        Das ist nötig, um die Seite auszuliefern und den Server zu schützen (Art. 6 Abs. 1 lit. f
+        DSGVO). Der Server speichert diese Daten nicht in Zugriffsprotokollen.
+      </p>
+      <p>
+        Der Server wird von der {LEGAL.hostingProvider}, {LEGAL.country.de}, betrieben, die diese Daten
+        in meinem Auftrag auf Grundlage eines Vertrags zur Auftragsverarbeitung verarbeitet (Art. 28
+        DSGVO).
+      </p>
+    </section>
+
+    <section aria-labelledby="storage">
+      <h2 id="storage">Lokaler Speicher</h2>
+      <p>
+        Wenn Sie zwischen hellem und dunklem Modus wechseln, wird Ihre Wahl im lokalen Speicher (Local
+        Storage) Ihres Browsers abgelegt. Sie verlässt Ihr Gerät nie und lässt sich jederzeit in den
+        Einstellungen Ihres Browsers löschen. Diese Speicherung ist für die von Ihnen gewünschte Funktion
+        unbedingt erforderlich (§ 25 Abs. 2 Nr. 2 TDDDG).
+      </p>
+    </section>
+
+    <section aria-labelledby="email">
+      <h2 id="email">Kontakt per E-Mail</h2>
+      <p>
+        Wenn Sie mir eine E-Mail schreiben, verarbeite ich Ihre Adresse und Ihre Nachricht, um Ihre
+        Anfrage zu beantworten (Art. 6 Abs. 1 lit. b oder f DSGVO), und lösche sie, sobald sie nicht mehr
+        benötigt werden, sofern keine gesetzlichen Aufbewahrungsfristen bestehen. Das E-Mail-Postfach
+        wird von der Proton AG, Route de la Galaise 32, 1228 Plan-les-Ouates, Schweiz, auf Grundlage
+        eines Vertrags zur Auftragsverarbeitung betrieben. Für die Schweiz besteht ein
+        Angemessenheitsbeschluss der Europäischen Kommission (Art. 45 DSGVO).
+      </p>
+    </section>
+
+    <section aria-labelledby="rights">
+      <h2 id="rights">Ihre Rechte</h2>
+      <p>
+        Sie haben das Recht auf Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16), Löschung (Art. 17),
+        Einschränkung der Verarbeitung (Art. 18), Datenübertragbarkeit (Art. 20) und Widerspruch gegen
+        eine Verarbeitung auf Grundlage berechtigter Interessen (Art. 21). Schreiben Sie dazu an {SITE.email}.
+      </p>
+      <p>
+        Außerdem haben Sie das Recht, sich bei einer Datenschutz-Aufsichtsbehörde zu beschweren (Art. 77
+        DSGVO), zum Beispiel beim Bayerischen Landesamt für Datenschutzaufsicht, Promenade 18, 91522
+        Ansbach.
+      </p>
+    </section>
+  </div>
+</BaseLayout>

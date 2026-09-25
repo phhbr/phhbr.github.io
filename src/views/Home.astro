@@ -1,0 +1,133 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContactLinks from '../components/ContactLinks.astro';
+import Hero from '../components/Hero.astro';
+import Testimonial from '../components/Testimonial.astro';
+import { testimonials } from '../data/cv';
+import { projects } from '../data/work';
+import { langOf, routes } from '../i18n';
+import { servicePath, servicesIn } from '../utils/services';
+import { graph, person, professionalService, website } from '../utils/structured-data';
+
+const lang = langOf(Astro.url);
+const services = await servicesIn(lang);
+const t = {
+  en: {
+    services: 'What I do',
+    servicesMore: 'Services in detail',
+    work: 'Selected work',
+    workMore: 'All projects in detail',
+    feedback: 'What colleagues say',
+    contact: 'Have a project in mind?',
+    contactText: "Tell me what you're building and where you're stuck.",
+  },
+  de: {
+    services: 'Was ich mache',
+    servicesMore: 'Alle Leistungen im Detail',
+    work: 'Ausgewählte Projekte',
+    workMore: 'Alle Projekte im Detail',
+    feedback: 'Stimmen aus dem Team',
+    contact: 'Sie planen ein Projekt?',
+    contactText: 'Erzählen Sie mir, woran Sie bauen und wo es gerade hakt.',
+  },
+}[lang];
+---
+
+<BaseLayout
+  alternates={routes.home}
+  xDefault="/"
+  structuredData={graph(person(lang), professionalService(services, lang), website())}
+>
+  <Hero />
+
+  <section aria-labelledby="services">
+    <h2 id="services">{t.services}</h2>
+    <ul class="ruled">
+      {
+        services.map((entry) => (
+          <li>
+            <a class="label" href={servicePath(entry)}>
+              {entry.data.title}
+            </a>
+            <span>{entry.data.summary}</span>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="more"><a href={routes.services[lang]}>{t.servicesMore}</a></p>
+  </section>
+
+  <section aria-labelledby="work">
+    <h2 id="work">{t.work}</h2>
+    <ul class="ruled projects">
+      {
+        projects.map(({ id, title, summary, client, period }) => (
+          <li>
+            <h3>
+              <a href={`${routes.work[lang]}#${id}`}>{title[lang]}</a>
+            </h3>
+            <p>{summary[lang]}</p>
+            <p class="meta">
+              {client[lang]}, {period[lang]}
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="more"><a href={routes.work[lang]}>{t.workMore}</a></p>
+  </section>
+
+  <section aria-labelledby="feedback">
+    <h2 id="feedback">{t.feedback}</h2>
+    <div class="quotes">
+      {testimonials.map((q) => <Testimonial quote={q.highlight} role={q.role} context={q.context[lang]} />)}
+    </div>
+  </section>
+
+  <section class="closing" aria-labelledby="contact">
+    <h2 id="contact">{t.contact}</h2>
+    <p>{t.contactText}</p>
+    <ContactLinks />
+  </section>
+</BaseLayout>
+
+<style>
+  .more {
+    margin-top: var(--space-2);
+  }
+
+  .projects > li {
+    display: block;
+  }
+
+  .projects h3 {
+    margin: 0 0 0.35rem;
+  }
+
+  .projects p {
+    max-width: var(--measure);
+    margin-bottom: 0.35rem;
+  }
+
+  .projects .meta {
+    margin: 0;
+  }
+
+  .quotes {
+    display: grid;
+    gap: var(--space-4);
+    max-width: var(--measure);
+  }
+
+  .closing {
+    margin-top: var(--space-6);
+    padding: var(--space-4) var(--space-3);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    background: var(--surface);
+  }
+
+  .closing h2 {
+    margin-top: 0;
+  }
+</style>

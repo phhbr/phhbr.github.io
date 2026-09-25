@@ -1,12 +1,13 @@
 ---
 import type { GetStaticPaths } from 'astro';
 import { getCollection, render } from 'astro:content';
-import BaseLayout from '../layouts/BaseLayout.astro';
-import { formatDate } from '../utils/date';
-import { lastModified } from '../utils/last-modified';
-import { blogPosting, graph } from '../utils/structured-data';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatDate } from '../../utils/date';
+import { lastModified } from '../../utils/last-modified';
+import { blogPosting, graph } from '../../utils/structured-data';
+import { postPath, writingPath } from '../../i18n';
 
-// Posts, served at their original paths (`/:slug/`).
+// Posts, in English only, at /en/:slug/ (their original paths plus /en).
 export const getStaticPaths = (async () => {
   const posts = await getCollection('posts');
   return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
@@ -21,6 +22,7 @@ const modified = lastModified([post.filePath!]);
   title={post.data.title}
   description={post.data.description}
   noindex={post.data.noindex}
+  alternates={{ en: postPath(post.id) }}
   article={{ published: post.data.pubDate, modified }}
   structuredData={graph(blogPosting(post, modified))}
 >
@@ -34,7 +36,7 @@ const modified = lastModified([post.filePath!]);
     </header>
     <Content />
   </article>
-  <p class="back"><a href="/writing/">All posts</a></p>
+  <p class="back"><a href={writingPath}>All posts</a></p>
 </BaseLayout>
 
 <style>

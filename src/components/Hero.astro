@@ -1,25 +1,41 @@
 ---
 import { SITE } from '../config';
+import { langOf, routes } from '../i18n';
 
 // The name is presented as if selected in the browser's element inspector. The
 // tooltip is decorative (aria-hidden) but truthful: the values are the real
 // ones for this heading, including the measured contrast in each theme. It sits
 // beside the intro on wide screens and is left out on narrow ones, so the call
-// to action stays in the first screen.
+// to action stays in the first screen. The labels follow the browser's
+// developer tools in each language.
+const lang = langOf(Astro.url);
+const t = {
+  en: {
+    lede: 'Freelance senior frontend engineer. I build design systems and web apps in TypeScript that meet BITV 2.0 and WCAG, with accessibility designed in rather than bolted on.',
+    based: `Based in ${SITE.locality}.`,
+    email: 'Email me',
+    offer: 'See what I offer',
+    tip: { font: 'Font', color: 'Color', a11y: 'Accessibility', contrast: 'Contrast', name: 'Name', role: 'Role', focusable: 'Keyboard-focusable' },
+  },
+  de: {
+    lede: 'Freiberuflicher Senior-Frontend-Entwickler. Ich baue Designsysteme und Web-Apps in TypeScript, die BITV 2.0 und WCAG erfüllen: Barrierefreiheit von Anfang an mitgedacht, nicht nachträglich aufgesetzt.',
+    based: `Aus ${SITE.locality}.`,
+    email: 'E-Mail schreiben',
+    offer: 'Zu meinen Leistungen',
+    tip: { font: 'Schriftart', color: 'Farbe', a11y: 'Barrierefreiheit', contrast: 'Kontrast', name: 'Name', role: 'Rolle', focusable: 'Mit Tastatur fokussierbar' },
+  },
+}[lang];
 ---
 
 <section class="hero" aria-labelledby="hero-name">
   <h1 id="hero-name" class="name">{SITE.author}</h1>
 
   <div class="intro">
-    <p class="lede">
-      Freelance senior frontend engineer. I build design systems and web apps in TypeScript that
-      meet BITV 2.0 and WCAG, with accessibility designed in rather than bolted on.
-    </p>
-    <p class="status"><span class="dot" aria-hidden="true"></span>Based in {SITE.locality}. {SITE.availability}</p>
+    <p class="lede">{t.lede}</p>
+    <p class="status"><span class="dot" aria-hidden="true"></span>{t.based} {SITE.availability[lang]}</p>
     <p class="actions">
-      <a class="button" href={`mailto:${SITE.email}`}>Email me</a>
-      <a href="/services/">See what I offer</a>
+      <a class="button" href={`mailto:${SITE.email}`}>{t.email}</a>
+      <a href={routes.services[lang]}>{t.offer}</a>
     </p>
   </div>
 
@@ -28,17 +44,17 @@ import { SITE } from '../config';
       <span class="tag">h1</span><span class="cls">.name</span>
     </p>
     <dl>
-      <dt>Font</dt>
+      <dt>{t.tip.font}</dt>
       <dd>Martian Mono</dd>
-      <dt>Color</dt>
+      <dt>{t.tip.color}</dt>
       <dd>
         <span class="swatch"></span>
         <span class="only-light">#14212E</span><span class="only-dark">#DCE4EE</span>
       </dd>
     </dl>
-    <p class="tip-section">Accessibility</p>
+    <p class="tip-section">{t.tip.a11y}</p>
     <dl>
-      <dt>Contrast</dt>
+      <dt>{t.tip.contrast}</dt>
       <dd>
         <span class="aa">Aa</span>
         <span class="only-light">14.38</span><span class="only-dark">14.19</span>
@@ -47,11 +63,11 @@ import { SITE } from '../config';
           <path d="M3.2 6.2l1.9 1.9 3.7-3.9"></path>
         </svg>
       </dd>
-      <dt>Name</dt>
+      <dt>{t.tip.name}</dt>
       <dd>{SITE.author}</dd>
-      <dt>Role</dt>
+      <dt>{t.tip.role}</dt>
       <dd>heading</dd>
-      <dt>Keyboard-focusable</dt>
+      <dt>{t.tip.focusable}</dt>
       <dd>
         <svg class="no" width="12" height="12" viewBox="0 0 12 12">
           <circle cx="6" cy="6" r="5"></circle>

@@ -1,5 +1,8 @@
 ---
+import { langOf, ui } from '../i18n';
+
 // Hidden until public/theme.js enables it, so it never shows as a dead control without JS.
+const lang = langOf(Astro.url);
 ---
 
 <button class="toggle" type="button" data-theme-toggle aria-pressed="false" hidden>
@@ -7,7 +10,7 @@
     <circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"></circle>
     <path d="M8 1.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"></path>
   </svg>
-  <span>Dark mode</span>
+  <span class="label">{ui[lang].themeToggle}</span>
 </button>
 
 <style>
@@ -30,5 +33,24 @@
   .toggle:hover,
   .toggle[aria-pressed='true'] {
     color: var(--ink);
+  }
+
+  /* Narrow screens: icon only, so the header keeps to two rows. The label
+     stays the button's accessible name, and the target stays 24px. */
+  @media (max-width: 40rem) {
+    .toggle {
+      justify-content: center;
+      min-width: 1.5rem;
+      min-height: 1.5rem;
+    }
+
+    .label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
   }
 </style>

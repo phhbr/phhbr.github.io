@@ -6,46 +6,76 @@ import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import JsonLd from '../components/JsonLd.astro';
 import { SITE } from '../config';
+import { langOf, langs, locales, ui, type Localized } from '../i18n';
 
 interface Props {
   title?: string;
   description?: string;
   noindex?: boolean;
+  // This page in each language it exists in: hreflang links and the language switch.
+  alternates?: Partial<Localized>;
+  // The hreflang="x-default" target; defaults to the English page.
+  xDefault?: string;
   // schema.org data for this page (src/utils/structured-data.ts).
   structuredData?: object;
   // Set on posts: rendered as an Open Graph article.
   article?: { published: Date; modified: Date };
 }
 
-const { title, description = SITE.description, noindex = false, structuredData, article } = Astro.props;
-const pageTitle = title ? `${title} | ${SITE.author}` : SITE.homeTitle;
+const lang = langOf(Astro.url);
+const {
+  title,
+  description = SITE.description[lang],
+  noindex = false,
+  alternates = {},
+  xDefault = alternates.en,
+  structuredData,
+  article,
+} = Astro.props;
+const pageTitle = title ? `${title} | ${SITE.author}` : SITE.homeTitle[lang];
 const canonical = new URL(Astro.url.pathname, Astro.site);
-// Link preview image, rendered by scripts/og-image.mjs.
-const ogImage = new URL('/og.png', Astro.site);
+const translations = langs.filter((l) => alternates[l]);
+// Link preview image per language, rendered by scripts/og-image.mjs.
+const ogImage = new URL(lang === 'de' ? '/og-de.png' : '/og.png', Astro.site);
+const ogImageAlt = {
+  en: `${SITE.author}, freelance senior frontend engineer for design systems and accessible web apps`,
+  de: `${SITE.author}, freiberuflicher Senior-Frontend-Entwickler für Designsysteme und barrierefreie Web-Apps`,
+}[lang];
 ---
 
 <!doctype html>
-<html lang={SITE.lang}>
+<html lang={locales[lang]}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {
+      translations.length > 1 && [
+        ...translations.map((l) => <link rel="alternate" hreflang={l} href={new URL(alternates[l]!, Astro.site)} />),
+        <link rel="alternate" hreflang="x-default" href={new URL(xDefault!, Astro.site)} />,
+      ]
+    }
     {noindex && <meta name="robots" content="noindex" />}
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#edf1f5" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0e1620" />
 
     <meta property="og:type" content={article ? 'article' : 'website'} />
     <meta property="og:site_name" content={SITE.title} />
-    <meta property="og:locale" content={SITE.lang.replace('-', '_')} />
+    <meta property="og:locale" content={locales[lang].replace('-', '_')} />
+    {
+      translations
+        .filter((l) => l !== lang)
+        .map((l) => <meta property="og:locale:alternate" content={locales[l].replace('-', '_')} />)
+    }
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content={`${SITE.author}, freelance senior frontend engineer for design systems and accessible web apps`} />
+    <meta property="og:image:alt" content={ogImageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     {article && <meta property="article:published_time" content={article.published.toISOString()} />}
     {article && <meta property="article:modified_time" content={article.modified.toISOString()} />}
@@ -62,9 +92,9 @@ const ogImage = new URL('/og.png', Astro.site);
     <script is:inline src="/theme.js"></script>
   </head>
   <body>
-    <a class="skip-link" href="#main">Skip to content</a>
+    <a class="skip-link" href="#main">{ui[lang].skip}</a>
     <div class="page">
-      <Nav />
+      <Nav alternates={alternates} />
       <main id="main" class="wrap">
         <slot />
       </main>

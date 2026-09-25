@@ -1,0 +1,10 @@
+---
+import type { GetStaticPaths } from 'astro';
+import Service from '../../../views/Service.astro';
+import { serviceSlug, servicesIn } from '../../../utils/services';
+
+export const getStaticPaths = (async () =>
+  (await servicesIn('de')).map((entry) => ({ params: { slug: serviceSlug(entry) }, props: { entry } }))) satisfies GetStaticPaths;
+---
+
+<Service entry={Astro.props.entry} />

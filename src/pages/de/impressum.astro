@@ -1,0 +1,94 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { LEGAL, SITE } from '../../config';
+import { routes } from '../../i18n';
+---
+
+<BaseLayout
+  alternates={routes.legal}
+  title="Impressum"
+  description="Impressum von bruchner.dev: Diensteanbieter, Kontaktdaten und inhaltlich Verantwortlicher nach deutschem Recht (§ 5 DDG, § 18 Abs. 2 MStV)."
+>
+  <div class="prose">
+    <h1>Impressum</h1>
+
+    <section aria-labelledby="provider">
+      <h2 id="provider">Angaben gemäß § 5 DDG</h2>
+      <address>
+        {LEGAL.name}<br />
+        {LEGAL.street}<br />
+        {LEGAL.city}<br />
+        {LEGAL.country.de}
+      </address>
+    </section>
+
+    <section aria-labelledby="contact">
+      <h2 id="contact">Kontakt</h2>
+      <p>
+        E-Mail: {SITE.email}<br />
+        Telefon: {LEGAL.phone}
+      </p>
+    </section>
+
+    {
+      LEGAL.vatId && (
+        <section aria-labelledby="vat">
+          <h2 id="vat">Umsatzsteuer-ID</h2>
+          <p>Umsatzsteuer-Identifikationsnummer gemäß § 27a Umsatzsteuergesetz: {LEGAL.vatId}</p>
+        </section>
+      )
+    }
+
+    <section aria-labelledby="responsible">
+      <h2 id="responsible">Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h2>
+      <address>
+        {LEGAL.name}<br />
+        {LEGAL.street}<br />
+        {LEGAL.city}
+      </address>
+    </section>
+
+    <section aria-labelledby="liability-content">
+      <h2 id="liability-content">Haftung für Inhalte</h2>
+      <p>
+        Die Inhalte dieser Website wurden mit größter Sorgfalt erstellt. Für die Richtigkeit,
+        Vollständigkeit und Aktualität der Inhalte kann ich jedoch keine Gewähr übernehmen. Als
+        Diensteanbieter bin ich gemäß § 7 Abs. 1 DDG für eigene Inhalte auf diesen Seiten nach den
+        allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 DDG bin ich als Diensteanbieter jedoch
+        nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach
+        Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen. Verpflichtungen zur
+        Entfernung oder Sperrung der Nutzung von Informationen nach den allgemeinen Gesetzen bleiben
+        hiervon unberührt. Eine diesbezügliche Haftung ist jedoch erst ab dem Zeitpunkt der Kenntnis
+        einer konkreten Rechtsverletzung möglich. Sobald ich von einer solchen Rechtsverletzung erfahre,
+        entferne ich die betreffenden Inhalte umgehend.
+      </p>
+    </section>
+
+    <section aria-labelledby="liability-links">
+      <h2 id="liability-links">Haftung für Links</h2>
+      <p>
+        Diese Website enthält Links zu externen Websites Dritter, auf deren Inhalte ich keinen Einfluss
+        habe. Deshalb kann ich für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte
+        der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich.
+        Die verlinkten Seiten wurden zum Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft;
+        rechtswidrige Inhalte waren zu diesem Zeitpunkt nicht erkennbar. Eine permanente inhaltliche
+        Kontrolle der verlinkten Seiten ist ohne konkrete Anhaltspunkte einer Rechtsverletzung jedoch
+        nicht zumutbar. Sobald ich von Rechtsverletzungen erfahre, entferne ich derartige Links umgehend.
+      </p>
+    </section>
+
+    <section aria-labelledby="copyright">
+      <h2 id="copyright">Urheberrecht</h2>
+      <p>
+        Die vom Seitenbetreiber erstellten Inhalte und Werke auf dieser Website unterliegen dem deutschen
+        Urheberrecht. Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb
+        der Grenzen des Urheberrechts bedürfen der schriftlichen Zustimmung des Autors. Beiträge Dritter
+        sind als solche gekennzeichnet. Sollten Sie dennoch auf eine Urheberrechtsverletzung aufmerksam
+        werden, bitte ich um einen entsprechenden Hinweis; ich entferne die betreffenden Inhalte dann
+        umgehend.
+      </p>
+    </section>
+
+    <p>Informationen zum Datenschutz: <a href={routes.privacy.de}>Datenschutzerklärung</a>.</p>
+  </div>
+</BaseLayout>

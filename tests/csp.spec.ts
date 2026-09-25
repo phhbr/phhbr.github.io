@@ -41,7 +41,7 @@ for (const path of [...pages.map(({ path }) => path), ...archivedPosts]) {
 
 test('theme toggle works under the production CSP', async ({ page }) => {
   await withCsp(page);
-  await page.goto('/');
+  await page.goto('/en/');
   const toggle = page.getByRole('button', { name: 'Dark mode' });
   await toggle.click();
   await expect(toggle).toHaveAttribute('aria-pressed', 'true');
@@ -50,7 +50,7 @@ test('theme toggle works under the production CSP', async ({ page }) => {
 
 test('the CSP is really applied: inline code is blocked', async ({ page }) => {
   await withCsp(page);
-  await page.goto('/');
+  await page.goto('/en/');
   await page.evaluate(() => {
     const script = document.createElement('script');
     script.textContent = 'window.inlineRan = true';

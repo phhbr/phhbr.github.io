@@ -4,7 +4,7 @@ description: "Since September 2025 I'm available for freelance work: frontend an
 pubDate: 2025-09-15
 ---
 
-> **Editor's note (September 2026):** My current offering and availability are on the [services](/services/) page.
+> **Editor's note (September 2026):** My current offering and availability are on the [services](/en/services/) page.
 
 ### 🚀 Open for Freelance Work
 

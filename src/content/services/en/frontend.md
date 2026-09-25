@@ -1,4 +1,5 @@
 ---
+key: frontend
 title: Frontend & design systems
 summary: Web applications, component libraries and design systems that are fast, accessible and maintainable.
 description: Freelance frontend engineer for design systems and web apps. Framework-agnostic web components (StencilJS) and TypeScript apps in Angular, React and Vue.

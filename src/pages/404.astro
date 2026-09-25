@@ -1,11 +1,17 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { routes, writingPath } from '../i18n';
+
+// One 404 page for both languages: English first, then a German pointer.
 ---
 
 <BaseLayout title="Page not found" noindex>
   <div class="prose">
     <h1>Page not found</h1>
     <p>There's nothing at this address. It may have moved when the site was rebuilt in 2026.</p>
-    <p>Go to the <a href="/">home page</a> or browse the <a href="/writing/">writing archive</a>.</p>
+    <p>Go to the <a href={routes.home.en}>home page</a> or browse the <a href={writingPath}>writing archive</a>.</p>
+    <p lang="de">
+      Diese Seite gibt es nicht (mehr). Weiter zur <a href={routes.home.de} hreflang="de">deutschen Startseite</a>.
+    </p>
   </div>
 </BaseLayout>

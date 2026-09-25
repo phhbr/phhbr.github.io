@@ -1,5 +1,6 @@
-// Renders public/og.png, the link preview image (1200×630), with the site's own
-// fonts and colours. Run after changing the name or tagline: `pnpm og`.
+// Renders the link preview images (1200×630) with the site's own fonts and
+// colours: public/og.png (English) and public/og-de.png (German). Run after
+// changing the name or tagline: `pnpm og`.
 import { readFileSync } from 'node:fs';
 import { chromium } from '@playwright/test';
 
@@ -9,8 +10,13 @@ const font = (path) =>
 const mono = font('@fontsource-variable/martian-mono/files/martian-mono-latin-wdth-normal.woff2');
 const body = font('@fontsource-variable/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-wght-normal.woff2');
 
+const taglines = {
+  'og.png': 'Freelance senior frontend engineer for design systems and accessible web apps.',
+  'og-de.png': 'Freiberuflicher Senior-Frontend-Entwickler für Designsysteme und barrierefreie Web-Apps.',
+};
+
 // Light theme tokens from src/styles/tokens.css.
-const html = `<!doctype html>
+const html = (tagline) => `<!doctype html>
 <style>
   @font-face { font-family: Mono; src: url(${mono}) format('woff2'); font-weight: 100 800; font-stretch: 87.5% 112.5%; }
   @font-face { font-family: Body; src: url(${body}) format('woff2'); font-weight: 200 800; }
@@ -44,13 +50,15 @@ const html = `<!doctype html>
   .site span { color: #1d5fb4; }
 </style>
 <h1>Philipp Bruchner</h1>
-<p>Freelance senior frontend engineer for design systems and accessible web apps.</p>
+<p>${tagline}</p>
 <div class="site"><span>~/</span>bruchner.dev</div>`;
 
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1200, height: 630 } });
-await page.setContent(html);
-await page.evaluate(() => document.fonts.ready);
-await page.screenshot({ path: new URL('../public/og.png', import.meta.url).pathname });
+for (const [file, tagline] of Object.entries(taglines)) {
+  await page.setContent(html(tagline));
+  await page.evaluate(() => document.fonts.ready);
+  await page.screenshot({ path: new URL(`../public/${file}`, import.meta.url).pathname });
+  console.log(`og-image: wrote public/${file}`);
+}
 await browser.close();
-console.log('og-image: wrote public/og.png');

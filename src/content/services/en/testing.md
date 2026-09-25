@@ -1,4 +1,5 @@
 ---
+key: testing
 title: Testing & quality
 summary: Test strategies and pipelines that let teams ship with confidence.
 description: "Test automation and CI/CD for web teams: unit tests with Jest, contract tests with Pact, end-to-end tests with Playwright, accessibility checks with axe-core."

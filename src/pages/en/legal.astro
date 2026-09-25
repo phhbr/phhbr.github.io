@@ -1,14 +1,16 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import { LEGAL, SITE } from '../config';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { LEGAL, SITE } from '../../config';
+import { routes } from '../../i18n';
 ---
 
 <BaseLayout
+  alternates={routes.legal}
   title="Legal Notice (Impressum)"
   description="Legal notice (Impressum) for bruchner.dev: service provider, contact details and who is responsible for the content, under German law (§ 5 DDG, § 18 MStV)."
 >
   <div class="prose">
-    <h1>Legal notice / Impressum</h1>
+    <h1>Legal notice</h1>
 
     <section aria-labelledby="provider">
       <h2 id="provider">Service provider (§ 5 DDG)</h2>
@@ -16,7 +18,7 @@ import { LEGAL, SITE } from '../config';
         {LEGAL.name}<br />
         {LEGAL.street}<br />
         {LEGAL.city}<br />
-        {LEGAL.country}
+        {LEGAL.country.en}
       </address>
     </section>
 
@@ -84,6 +86,6 @@ import { LEGAL, SITE } from '../config';
       </p>
     </section>
 
-    <p>Information on data protection: <a href="/privacy/">privacy policy</a>.</p>
+    <p>Information on data protection: <a href={routes.privacy.en}>privacy policy</a>.</p>
   </div>
 </BaseLayout>

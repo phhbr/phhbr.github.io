@@ -1,10 +1,13 @@
 ---
 import { SITE } from '../config';
+import { langOf, ui } from '../i18n';
+
+const t = ui[langOf(Astro.url)];
 ---
 
 <p class="reach">
-  <a class="button" href={`mailto:${SITE.email}`}>Email {SITE.email}</a>
-  <span>or call <a href={`tel:${SITE.phone.replace(/\s/g, '')}`}>{SITE.phone}</a></span>
+  <a class="button" href={`mailto:${SITE.email}`}>{t.email} {SITE.email}</a>
+  <span>{t.orCall} <a href={`tel:${SITE.phone.replace(/\s/g, '')}`}>{SITE.phone}</a></span>
 </p>
 
 <style>

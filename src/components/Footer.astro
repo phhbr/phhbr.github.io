@@ -1,5 +1,9 @@
 ---
 import { SITE } from '../config';
+import { langOf, routes, ui, writingPath } from '../i18n';
+
+const lang = langOf(Astro.url);
+const t = ui[lang].footer;
 ---
 
 <footer class="site-footer">
@@ -8,10 +12,10 @@ import { SITE } from '../config';
     <ul>
       <li><a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
       <li><a href={SITE.github} rel="noopener noreferrer">GitHub</a></li>
-      <li><a href="/writing/">Writing</a></li>
-      <li><a href="/feed.xml">RSS</a></li>
-      <li><a href="/legal/">Legal notice</a></li>
-      <li><a href="/privacy/">Privacy</a></li>
+      <li><a href={writingPath} hreflang={lang === 'en' ? undefined : 'en'}>{t.writing}</a></li>
+      <li><a href="/feed.xml">{t.rss}</a></li>
+      <li><a href={routes.legal[lang]}>{t.legal}</a></li>
+      <li><a href={routes.privacy[lang]}>{t.privacy}</a></li>
     </ul>
     <p class="copy">&copy; {new Date().getFullYear()} {SITE.author}</p>
   </div>

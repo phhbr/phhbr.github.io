@@ -16,15 +16,32 @@ bruchner.dev {
 	@revalidate not path /_astro/*
 	header @revalidate Cache-Control "no-cache"
 
+	# The bare domain picks a language: German for browsers that prefer it,
+	# English otherwise. Temporary, so the choice is made on every visit.
+	@root_de {
+		path /
+		header_regexp Accept-Language ^\s*de
+	}
+	@root path /
+	header @root Vary Accept-Language
+	# Both matchers are named, so the two redirects keep this order.
+	redir @root_de /de/ 302
+	redir @root /en/ 302
+
+	# English pages moved under /en/ when the German version arrived (2026-09).
+	# The build also ships static redirect pages at these paths as a fallback.
+	@moved path_regexp ^/(services|work|cv|writing|legal|privacy|hello-world|still-alive|freelance-availability|leaving-linkedin|relaunch)(/.*)?$
+	redir @moved /en{uri} permanent
+
 	# Old URLs that no longer exist.
 	@resume path /resume /resume/
-	redir @resume /cv/ permanent
+	redir @resume /en/cv/ permanent
 	@home path /about /about/ /notes /notes/ /thanks /thanks/
 	redir @home / permanent
 	@tags path /tags /tags/
-	redir @tags /writing/ permanent
+	redir @tags /en/writing/ permanent
 	@june path /looking-for-something-new /looking-for-something-new/
-	redir @june /relaunch/ permanent
+	redir @june /en/relaunch/ permanent
 	redir /sitemap.xml /sitemap-index.xml permanent
 
 	file_server

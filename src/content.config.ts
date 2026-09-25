@@ -20,9 +20,12 @@ const posts = defineCollection({
   }),
 });
 
+// One folder per language (en/, de/). The file name is the URL slug; `key`
+// pairs a service with its translation.
 const services = defineCollection({
-  loader: glob({ pattern: '*.md', base: './src/content/services' }),
+  loader: glob({ pattern: '*/*.md', base: './src/content/services' }),
   schema: z.object({
+    key: z.string(),
     title: z.string(),
     summary: z.string(),
     // Meta description for the service's own page (about 120–160 characters).

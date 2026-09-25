@@ -1,7 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import { formatDate } from '../../utils/date';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { formatDate } from '../../../utils/date';
+import { postPath, writingPath } from '../../../i18n';
 
 const posts = (await getCollection('posts')).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
@@ -9,6 +10,7 @@ const posts = (await getCollection('posts')).sort(
 ---
 
 <BaseLayout
+  alternates={{ en: writingPath }}
   title="Writing"
   description="Posts by Philipp Bruchner on relaunching this site and on freelancing as a frontend engineer, plus archived notes from the years before."
 >
@@ -22,7 +24,7 @@ const posts = (await getCollection('posts')).sort(
             {formatDate(data.pubDate)}
           </time>
           <span>
-            <a href={`/${id}/`}>{data.title}</a>
+            <a href={postPath(id)}>{data.title}</a>
             {data.archived && <span class="muted"> (archived)</span>}
           </span>
         </li>

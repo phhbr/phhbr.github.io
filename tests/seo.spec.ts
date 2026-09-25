@@ -30,22 +30,31 @@ for (const path of noindexPosts) {
   });
 }
 
-test('pages share a link preview image that exists', async ({ page, request }) => {
-  await page.goto('/');
-  const image = await page.locator('meta[property="og:image"]').getAttribute('content');
-  expect(image).toBe('https://bruchner.dev/og.png');
-  const response = await request.get(new URL(image!).pathname);
-  expect(response.status()).toBe(200);
-  expect(response.headers()['content-type']).toBe('image/png');
-  await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image');
-});
+for (const [path, image] of [
+  ['/en/', 'og.png'],
+  ['/de/', 'og-de.png'],
+]) {
+  test(`${path} has a link preview image that exists`, async ({ page, request }) => {
+    await page.goto(path);
+    const content = await page.locator('meta[property="og:image"]').getAttribute('content');
+    expect(content).toBe(`https://bruchner.dev/${image}`);
+    const response = await request.get(new URL(content!).pathname);
+    expect(response.status()).toBe(200);
+    expect(response.headers()['content-type']).toBe('image/png');
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image');
+  });
+}
 
 const expectedTypes: Record<string, string[]> = {
-  '/': ['Person', 'ProfessionalService', 'WebSite'],
-  '/services/': ['ProfessionalService'],
-  '/services/accessibility/': ['Service'],
-  '/cv/': ['ProfilePage'],
-  '/relaunch/': ['BlogPosting'],
+  '/en/': ['Person', 'ProfessionalService', 'WebSite'],
+  '/de/': ['Person', 'ProfessionalService', 'WebSite'],
+  '/en/services/': ['ProfessionalService'],
+  '/de/leistungen/': ['ProfessionalService'],
+  '/en/services/accessibility/': ['Service'],
+  '/de/leistungen/barrierefreiheit/': ['Service'],
+  '/en/cv/': ['ProfilePage'],
+  '/de/lebenslauf/': ['ProfilePage'],
+  '/en/relaunch/': ['BlogPosting'],
 };
 
 for (const [path, types] of Object.entries(expectedTypes)) {

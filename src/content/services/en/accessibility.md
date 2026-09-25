@@ -1,4 +1,5 @@
 ---
+key: accessibility
 title: Accessibility (BITV & WCAG)
 summary: Accessible components and applications, built and tested to BITV 2.0 and WCAG, including screen reader and high-contrast testing.
 description: "Accessibility engineering to BITV 2.0 and WCAG: accessible components and apps, screen reader and high-contrast testing, and support through BITV acceptance."

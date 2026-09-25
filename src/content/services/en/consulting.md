@@ -1,4 +1,5 @@
 ---
+key: consulting
 title: Architecture & consulting
 summary: Architecture reviews, technology decisions and mentoring for teams that want a second opinion.
 description: Frontend architecture reviews, UI coding standards, code reviews across teams, and trainings on web client security, contract testing and Angular.

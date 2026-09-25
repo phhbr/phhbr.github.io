@@ -1,0 +1,117 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContactLinks from '../components/ContactLinks.astro';
+import { SITE } from '../config';
+import { langOf, routes } from '../i18n';
+import { servicePath, servicesIn } from '../utils/services';
+import { graph, professionalService } from '../utils/structured-data';
+
+const lang = langOf(Astro.url);
+const services = await servicesIn(lang);
+const t = {
+  en: {
+    title: 'Frontend & Accessibility Services',
+    description:
+      'Freelance services from Nürnberg: frontend and design systems, accessibility to BITV and WCAG, Node.js backends, test automation and architecture consulting.',
+    heading: 'Services',
+    lede: 'I join teams as a senior engineer or advise them from the outside, on the frontend and on the tooling around it.',
+    engagement: 'Ways to work together',
+    ways: [
+      ['Greenfield', 'Setting up solid foundations for a new product.'],
+      ['Modernisation', 'Moving a legacy frontend forward with careful planning and execution.'],
+      ['Team augmentation', 'Extra senior capacity for critical frontend or full-stack work.'],
+      ['Consulting', 'Architecture decisions, reviews and a second opinion.'],
+    ],
+    where: `Based in ${SITE.locality}, Germany (CET). Remote, or on-site within reasonable travel distance. See`,
+    projects: 'selected projects',
+    contact: 'Start a conversation',
+  },
+  de: {
+    title: 'Leistungen: Frontend & Barrierefreiheit',
+    description:
+      'Freiberufliche Leistungen aus Nürnberg: Frontend und Designsysteme, Barrierefreiheit nach BITV und WCAG, Node.js-Backends, Testautomatisierung und Beratung.',
+    heading: 'Leistungen',
+    lede: 'Ich arbeite als Senior-Entwickler in Ihrem Team mit oder berate es von außen, beim Frontend und bei den Werkzeugen drumherum.',
+    engagement: 'Formen der Zusammenarbeit',
+    ways: [
+      ['Neuentwicklung', 'Solide Grundlagen für ein neues Produkt schaffen.'],
+      ['Modernisierung', 'Ein bestehendes Frontend sorgfältig geplant weiterentwickeln.'],
+      ['Teamverstärkung', 'Zusätzliche Senior-Kapazität für kritische Frontend- oder Full-Stack-Arbeit.'],
+      ['Beratung', 'Architekturentscheidungen, Reviews und eine zweite Meinung.'],
+    ],
+    where: `Mit Sitz in ${SITE.locality} (MEZ). Remote oder vor Ort in vertretbarer Reisedistanz. Siehe`,
+    projects: 'ausgewählte Projekte',
+    contact: 'Sprechen wir darüber',
+  },
+}[lang];
+---
+
+<BaseLayout
+  title={t.title}
+  description={t.description}
+  alternates={routes.services}
+  structuredData={graph(professionalService(services, lang))}
+>
+  <h1 class="page-title">{t.heading}</h1>
+  <p class="lede">{t.lede}</p>
+
+  {
+    services.map((entry) => (
+      <section class="service">
+        <h2>
+          <a href={servicePath(entry)}>{entry.data.title}</a>
+        </h2>
+        <p>{entry.data.summary}</p>
+        <ul>
+          {entry.data.skills.map((skill) => (
+            <li>{skill}</li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+
+  <section aria-labelledby="engagement">
+    <h2 id="engagement">{t.engagement}</h2>
+    <ul class="ruled">
+      {
+        t.ways.map(([label, text]) => (
+          <li>
+            <span class="label">{label}</span>
+            <span>{text}</span>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="muted where">
+      {t.where} <a href={routes.work[lang]}>{t.projects}</a>.
+    </p>
+  </section>
+
+  <section class="contact" aria-labelledby="contact">
+    <h2 id="contact">{t.contact}</h2>
+    <ContactLinks />
+  </section>
+</BaseLayout>
+
+<style>
+  .page-title {
+    margin-top: var(--space-5);
+  }
+
+  .service {
+    max-width: var(--measure);
+  }
+
+  .service ul {
+    padding-left: 1.25rem;
+  }
+
+  .where {
+    margin-top: var(--space-2);
+  }
+
+  .contact {
+    margin-top: var(--space-5);
+  }
+</style>

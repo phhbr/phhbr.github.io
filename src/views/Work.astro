@@ -1,0 +1,100 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContactLinks from '../components/ContactLinks.astro';
+import { projects } from '../data/work';
+import { langOf, routes } from '../i18n';
+
+const lang = langOf(Astro.url);
+const t = {
+  en: {
+    title: 'Work: Design Systems & Web Apps',
+    description:
+      'Selected projects: accessible design systems for the public sector and a global company, a legacy data warehouse moved to the web, and automotive master data.',
+    heading: 'Work',
+    lede: 'Selected projects from the last years. Clients are described by sector rather than named.',
+    technologies: 'Technologies:',
+    contact: 'Something similar in your project?',
+    see: 'See the',
+    services: 'services',
+    direct: 'or write to me directly.',
+  },
+  de: {
+    title: 'Projekte: Designsysteme & Web-Apps',
+    description:
+      'Ausgewählte Projekte: barrierefreie Designsysteme für den öffentlichen Sektor und einen Konzern, ein Data Warehouse im Web und ein Stammdatensystem.',
+    heading: 'Projekte',
+    lede: 'Ausgewählte Projekte der letzten Jahre. Kunden werden nach Branche beschrieben, nicht beim Namen genannt.',
+    technologies: 'Technologien:',
+    contact: 'Etwas Ähnliches in Ihrem Projekt?',
+    see: 'Mehr zu meinen',
+    services: 'Leistungen',
+    direct: 'oder schreiben Sie mir direkt.',
+  },
+}[lang];
+---
+
+<BaseLayout title={t.title} description={t.description} alternates={routes.work}>
+  <h1 class="page-title">{t.heading}</h1>
+  <p class="lede">{t.lede}</p>
+
+  {
+    projects.map(({ id, title, client, period, role, context, work, stack }) => (
+      <section class="project" id={id} aria-labelledby={`${id}-title`}>
+        <h2 id={`${id}-title`}>{title[lang]}</h2>
+        <p class="meta">
+          {client[lang]}, {period[lang]}. {role[lang]}
+        </p>
+        <p>{context[lang]}</p>
+        <ul>
+          {work[lang].map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+        <p class="stack">
+          <span class="visually-hidden">{t.technologies} </span>
+          {stack.join(', ')}
+        </p>
+      </section>
+    ))
+  }
+
+  <section class="contact" aria-labelledby="contact">
+    <h2 id="contact">{t.contact}</h2>
+    <p>
+      {t.see} <a href={routes.services[lang]}>{t.services}</a> {t.direct}
+    </p>
+    <ContactLinks />
+  </section>
+</BaseLayout>
+
+<style>
+  .page-title {
+    margin-top: var(--space-5);
+  }
+
+  .project {
+    max-width: var(--measure);
+    padding-top: var(--space-1);
+    border-top: 1px solid var(--rule);
+    margin-top: var(--space-4);
+  }
+
+  .project h2 {
+    margin-top: var(--space-3);
+    margin-bottom: var(--space-1);
+  }
+
+  .project ul {
+    padding-left: 1.25rem;
+  }
+
+  .stack {
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+
+  .contact {
+    margin-top: var(--space-5);
+  }
+</style>

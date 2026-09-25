@@ -1,0 +1,75 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ContactLinks from '../components/ContactLinks.astro';
+import { SITE } from '../config';
+import { routes } from '../i18n';
+import { serviceAlternates, serviceLang } from '../utils/services';
+import { graph, service } from '../utils/structured-data';
+
+interface Props {
+  entry: CollectionEntry<'services'>;
+}
+
+const { entry } = Astro.props;
+const { data } = entry;
+const lang = serviceLang(entry);
+const { Content } = await render(entry);
+const alternates = await serviceAlternates(entry);
+const t = {
+  en: {
+    crumb: 'Services',
+    contact: 'Start a conversation',
+    where: `Based in ${SITE.locality}, working remotely or on-site. See`,
+    projects: 'selected projects',
+    direct: 'or write to me directly.',
+  },
+  de: {
+    crumb: 'Leistungen',
+    contact: 'Sprechen wir darüber',
+    where: `Mit Sitz in ${SITE.locality}, remote oder vor Ort. Sehen Sie sich`,
+    projects: 'ausgewählte Projekte',
+    direct: 'an oder schreiben Sie mir direkt.',
+  },
+}[lang];
+---
+
+<BaseLayout title={data.title} description={data.description} alternates={alternates} structuredData={graph(service(entry))}>
+  <nav class="crumbs" aria-label={lang === 'de' ? 'Brotkrumen' : 'Breadcrumb'}>
+    <a href={routes.services[lang]}>{t.crumb}</a>
+  </nav>
+  <article class="prose">
+    <h1>{data.title}</h1>
+    <p class="lede">{data.summary}</p>
+    <ul>
+      {data.skills.map((skill) => <li>{skill}</li>)}
+    </ul>
+    <Content />
+  </article>
+
+  <section class="contact" aria-labelledby="contact">
+    <h2 id="contact">{t.contact}</h2>
+    <p>
+      {t.where} <a href={routes.work[lang]}>{t.projects}</a> {t.direct}
+    </p>
+    <ContactLinks />
+  </section>
+</BaseLayout>
+
+<style>
+  .crumbs {
+    margin-top: var(--space-5);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+
+  article h1 {
+    margin-top: var(--space-2);
+  }
+
+  .contact {
+    max-width: var(--measure);
+    margin-top: var(--space-5);
+  }
+</style>

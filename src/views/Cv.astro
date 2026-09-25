@@ -1,0 +1,108 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Testimonial from '../components/Testimonial.astro';
+import { langOf, routes, tr } from '../i18n';
+import { profilePage } from '../utils/structured-data';
+import {
+  certificates,
+  education,
+  experience,
+  profile,
+  teaching,
+  testimonials,
+  trainings,
+  type Role,
+} from '../data/cv';
+
+const lang = langOf(Astro.url);
+const t = {
+  en: {
+    title: 'CV: Senior Frontend Engineer',
+    description:
+      'CV of Philipp Bruchner, freelance senior frontend engineer in Nürnberg: design systems, accessibility, Angular and TypeScript, trainings and certificates.',
+    heading: 'Curriculum vitae',
+    details: 'Project details are on the',
+    work: 'work',
+    after: ' page.',
+    profile: 'Profile',
+    role: 'Role',
+    focus: 'Focus',
+    skills: 'Core skills',
+    timelines: ['Experience', 'Education', 'Trainer and speaker', 'Trainings', 'Certificates'],
+    recommendations: 'Recommendations',
+  },
+  de: {
+    title: 'Lebenslauf: Senior-Frontend-Entwickler',
+    description:
+      'Lebenslauf von Philipp Bruchner, freiberuflicher Senior-Frontend-Entwickler in Nürnberg: Designsysteme, Barrierefreiheit, Angular, TypeScript und Schulungen.',
+    heading: 'Lebenslauf',
+    details: 'Details zu den Projekten stehen unter',
+    work: 'Projekte',
+    after: '.',
+    profile: 'Profil',
+    role: 'Rolle',
+    focus: 'Schwerpunkte',
+    skills: 'Kernkompetenzen',
+    timelines: ['Berufserfahrung', 'Ausbildung', 'Trainer und Referent', 'Weiterbildungen', 'Zertifikate'],
+    recommendations: 'Empfehlungen',
+  },
+}[lang];
+
+const timelines: { heading: string; entries: Role[] }[] = [experience, education, teaching, trainings, certificates].map(
+  (entries, i) => ({ heading: t.timelines[i], entries }),
+);
+---
+
+<BaseLayout
+  title={t.title}
+  description={t.description}
+  alternates={routes.cv}
+  structuredData={{ '@context': 'https://schema.org', ...profilePage(lang) }}
+>
+  <h1 class="page-title">{t.heading}</h1>
+  <p>{t.details} <a href={routes.work[lang]}>{t.work}</a>{t.after}</p>
+
+  <section aria-labelledby="profile">
+    <h2 id="profile" class="visually-hidden">{t.profile}</h2>
+    <ul class="ruled">
+      <li><span class="label">{t.role}</span><span>{tr(profile.role, lang)}</span></li>
+      <li><span class="label">{t.focus}</span><span>{tr(profile.focus, lang).join(', ')}</span></li>
+      <li><span class="label">{t.skills}</span><span>{tr(profile.coreSkills, lang).join(', ')}</span></li>
+    </ul>
+  </section>
+
+  {
+    timelines.map(({ heading, entries }) => (
+      <section>
+        <h2>{heading}</h2>
+        <ul class="ruled">
+          {entries.map(({ period, title }) => (
+            <li>
+              <span class="label">{tr(period, lang)}</span>
+              <span>{tr(title, lang)}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+
+  <section aria-labelledby="recommendations">
+    <h2 id="recommendations">{t.recommendations}</h2>
+    <div class="quotes">
+      {testimonials.map((q) => <Testimonial quote={q.quote} role={q.role} context={q.context[lang]} />)}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-title {
+    margin-top: var(--space-5);
+  }
+
+  .quotes {
+    display: grid;
+    gap: var(--space-4);
+    max-width: var(--measure);
+  }
+</style>

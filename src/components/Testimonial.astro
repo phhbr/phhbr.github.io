@@ -1,15 +1,20 @@
 ---
-import type { Testimonial } from '../data/cv';
+interface Props {
+  quote: string;
+  role: string;
+  // Where the person worked with me, in the page's language.
+  context: string;
+}
 
-type Props = Testimonial;
-const { quote, role, company } = Astro.props;
+const { quote, role, context } = Astro.props;
 ---
 
 <figure class="testimonial">
-  <blockquote>
+  {/* Quotes are kept in the English they were written in. */}
+  <blockquote lang="en">
     <p>{quote}</p>
   </blockquote>
-  <figcaption>{role}, {company}</figcaption>
+  <figcaption>{role}, {context}</figcaption>
 </figure>
 
 <style>

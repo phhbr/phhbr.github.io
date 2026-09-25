@@ -20,10 +20,14 @@ Dependencies are only installed once a release is at least 5 days old (`minimumR
 
 ## Layout
 
-- `src/config.ts`: site identity, contact address and Impressum data
-- `src/content/posts/`: archived posts; the filename minus its date prefix is the URL slug
-- `src/content/services/`: service offerings shown on `/` and `/services/`
-- `src/data/cv.ts`: CV data rendered on `/cv/`
+The site is in English (`/en/`) and German (`/de/`); the bare domain sends visitors to one of them by browser language (in Caddy). Posts are English only.
+
+- `src/i18n/index.ts`: languages, the route table (German pages have German paths) and shared interface text
+- `src/config.ts`: site identity, contact details, availability and Impressum data
+- `src/views/`: page templates shared by both languages; `src/pages/en/` and `src/pages/de/` route to them
+- `src/content/services/{en,de}/`: service offerings; the file name is the slug, `key` pairs translations
+- `src/content/posts/`: posts; the filename minus its date prefix is the slug under `/en/`
+- `src/data/`: CV and projects, with `{ en, de }` wherever the text differs; clients and employers are described by sector, never named
 - `scripts/check-inline.mjs`: fails the build on inline scripts or styles, which the CSP blocks
 - `scripts/og-image.mjs`: renders the link preview image with the site's fonts
 - `tests/`: Playwright smoke tests, axe accessibility checks and a CSP test (desktop and mobile)
