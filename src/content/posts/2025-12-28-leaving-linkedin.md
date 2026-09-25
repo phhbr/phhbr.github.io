@@ -26,7 +26,7 @@ Even without LinkedIn, I remain just as reachable for clients, collaborators, an
 
 If you’d like to work with me or simply stay in touch, please reach out directly via:
 
-- 📧 Email: **[hello@phhbr.de](mailto:hello@phhbr.de)**
+- 📧 Email: **[hello@bruchner.dev](mailto:hello@bruchner.dev)**
 - 💻 Code & projects: **[GitHub](https://github.com/phhbr)**
 
 ***

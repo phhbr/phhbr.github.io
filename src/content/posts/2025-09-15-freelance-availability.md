@@ -59,7 +59,7 @@ I'm particularly interested in:
 
 If you have a project that could benefit from my experience, I'd love to hear about it.
 
-Reach out via 📧 [hello@phhbr.de](mailto:hello@phhbr.de) or connect with me on [GitHub](https://github.com/phhbr).
+Reach out via 📧 [hello@bruchner.dev](mailto:hello@bruchner.dev) or connect with me on [GitHub](https://github.com/phhbr).
 
 I'm based in Germany (CET timezone) and available for both remote work and on-site collaboration within reasonable travel distance.
 

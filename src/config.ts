@@ -3,9 +3,8 @@ export const SITE = {
   author: 'Philipp Bruchner',
   description:
     'Freelance software engineer for TypeScript web applications, design systems, accessibility and CI/CD.',
-  // Switch to hello@bruchner.dev once that mailbox exists, and replace the
-  // address in src/content/posts at the same time.
-  email: 'hello@phhbr.de',
+  // Also written out in a few posts under src/content/posts.
+  email: 'hello@bruchner.dev',
   github: 'https://github.com/phhbr',
   lang: 'en-GB',
 };
