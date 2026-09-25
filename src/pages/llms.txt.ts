@@ -6,21 +6,22 @@ import { SITE } from '../config';
 export async function GET(context: APIContext) {
   const url = (path: string) => new URL(path, context.site).href;
   const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
-  const posts = (await getCollection('posts')).sort(
+  const posts = (await getCollection('posts', ({ data }) => !data.noindex)).sort(
     (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
   );
 
   const body = [
     `# ${SITE.author}`,
     '',
-    `> ${SITE.description} Based in Germany, working remotely or on-site.`,
+    `> ${SITE.description}`,
     '',
     `Contact: ${SITE.email}. Code: ${SITE.github}.`,
     '',
     '## Services',
     '',
     `- [Services](${url('/services/')}): what I offer and ways to work together`,
-    ...services.map(({ data }) => `  - ${data.title}: ${data.summary}`),
+    ...services.map(({ id, data }) => `  - [${data.title}](${url(`/services/${id}/`)}): ${data.summary}`),
+    `- [Work](${url('/work/')}): selected projects, clients described by sector`,
     '',
     '## About',
     '',

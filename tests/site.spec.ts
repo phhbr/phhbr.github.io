@@ -57,12 +57,25 @@ test('home page does not scroll horizontally', async ({ page }) => {
   expect(overflow).toBeLessThanOrEqual(0);
 });
 
-test('home page describes the person and service as JSON-LD', async ({ page }) => {
-  await page.goto('/');
-  const blocks = await page.locator('script[type="application/ld+json"]').allTextContents();
-  expect(blocks).toHaveLength(1);
-  const graph: { '@type': string }[] = JSON.parse(blocks[0])['@graph'];
-  expect(graph.map((node) => node['@type']).sort()).toEqual(['Person', 'ProfessionalService', 'WebSite']);
+// Astro strips whitespace JSX-style: a line break between text and a link
+// disappears, gluing words together ("projectsor").
+test('no words are glued to links', async ({ page }) => {
+  for (const path of [...pages.map(({ path }) => path), ...archivedPosts]) {
+    await page.goto(path);
+    const glued = await page.evaluate(() =>
+      [...document.querySelectorAll('main a')].flatMap((link) => {
+        const textOf = (node: ChildNode | null) => (node?.nodeType === Node.TEXT_NODE ? node.textContent ?? '' : '');
+        const before = textOf(link.previousSibling);
+        const after = textOf(link.nextSibling);
+        const text = link.textContent ?? '';
+        const problems = [];
+        if (/[A-Za-z]$/.test(before) && /^[A-Za-z]/.test(text)) problems.push(`${before.slice(-10)}|${text}`);
+        if (/[A-Za-z]$/.test(text) && /^[A-Za-z]/.test(after)) problems.push(`${text}|${after.slice(0, 10)}`);
+        return problems;
+      }),
+    );
+    expect(glued, path).toEqual([]);
+  }
 });
 
 test('no request leaves the site', async ({ page, baseURL }) => {

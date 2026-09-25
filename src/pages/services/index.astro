@@ -1,12 +1,17 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseLayout from '../layouts/BaseLayout.astro';
-import { SITE } from '../config';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE } from '../../config';
+import { graph, professionalService } from '../../utils/structured-data';
 
 const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
 ---
 
-<BaseLayout title="Services" description="What I offer as a freelance software engineer and how I work.">
+<BaseLayout
+  title="Frontend & Accessibility Services"
+  description="Freelance services from Nürnberg: frontend and design systems, accessibility to BITV and WCAG, Node.js backends, test automation and architecture consulting."
+  structuredData={graph(professionalService(services))}
+>
   <h1 class="page-title">Services</h1>
   <p class="lede">
     I join teams as a senior engineer or advise them from the outside, on the frontend and on the
@@ -14,9 +19,11 @@ const services = (await getCollection('services')).sort((a, b) => a.data.order -
   </p>
 
   {
-    services.map(({ data }) => (
+    services.map(({ id, data }) => (
       <section class="service">
-        <h2>{data.title}</h2>
+        <h2>
+          <a href={`/services/${id}/`}>{data.title}</a>
+        </h2>
         <p>{data.summary}</p>
         <ul>
           {data.skills.map((skill) => (
@@ -35,7 +42,10 @@ const services = (await getCollection('services')).sort((a, b) => a.data.order -
       <li><span class="label">Team augmentation</span><span>Extra senior capacity for critical frontend or full-stack work.</span></li>
       <li><span class="label">Consulting</span><span>Architecture decisions, reviews and a second opinion.</span></li>
     </ul>
-    <p class="muted where">Based in Germany (CET). Remote, or on-site within reasonable travel distance.</p>
+    <p class="muted where">
+      Based in {SITE.locality}, Germany (CET). Remote, or on-site within reasonable travel distance.
+      See <a href="/work/">selected projects</a>.
+    </p>
   </section>
 
   <section class="contact" aria-labelledby="contact">

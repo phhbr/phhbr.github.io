@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Testimonial from '../components/Testimonial.astro';
+import { profilePage } from '../utils/structured-data';
 import {
   certificates,
   education,
@@ -21,8 +22,13 @@ const timelines: { heading: string; entries: Role[] }[] = [
 ];
 ---
 
-<BaseLayout title="CV" description="Curriculum vitae of Philipp Bruchner, software engineer.">
+<BaseLayout
+  title="CV: Senior Frontend Engineer"
+  description="CV of Philipp Bruchner, freelance senior frontend engineer in Nürnberg: design systems, accessibility, Angular and TypeScript, trainings and certificates."
+  structuredData={{ '@context': 'https://schema.org', ...profilePage() }}
+>
   <h1 class="page-title">Curriculum vitae</h1>
+  <p>Project details are on the <a href="/work/">work</a> page.</p>
 
   <section aria-labelledby="profile">
     <h2 id="profile" class="visually-hidden">Profile</h2>

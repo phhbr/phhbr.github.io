@@ -1,6 +1,6 @@
 ---
 title: open for freelance opportunities
-description: available for freelance software engineering projects starting september 15th
+description: "Since September 2025 I'm available for freelance work: frontend and design systems, Node.js backends, test automation and architecture consulting."
 pubDate: 2025-09-15
 ---
 

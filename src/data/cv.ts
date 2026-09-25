@@ -12,21 +12,29 @@ export interface Testimonial {
 }
 
 export const profile = {
-  role: 'Software engineer',
+  role: 'Senior frontend engineer, freelance',
   focus: ['Problem solving', 'Web client development', 'Systems design'],
-  coreSkills: ['TypeScript (web, Node.js)', 'Accessibility', 'GitLab CI/CD', 'Kubernetes'],
+  coreSkills: [
+    'TypeScript (web, Node.js)',
+    'Design systems and web components (StencilJS)',
+    'Accessibility (BITV 2.0, WCAG)',
+    'Angular',
+    'Test automation (Jest, Pact, Playwright, axe-core)',
+    'CI/CD (GitLab, GitHub Actions, Jenkins)',
+    'Kubernetes',
+  ],
 };
 
 export const experience: Role[] = [
   { period: 'since 2025', title: 'Freelance software engineer / IT consultant' },
-  { period: '2022 – 2025', title: 'GfK SE (acquired by NielsenIQ)' },
-  { period: '2017 – 2022', title: 'Capgemini Deutschland GmbH' },
+  { period: '2022 – 2025', title: 'Senior frontend software engineer, GfK SE (acquired by NielsenIQ)' },
+  { period: '2017 – 2022', title: 'Frontend engineer, later senior web developer (consulting), Capgemini Deutschland GmbH' },
   { period: '2015 – 2017', title: 'Mediendesign AG' },
 ];
 
 export const education: Role[] = [
-  { period: '2012 – 2014', title: 'Computer Science, M.Sc. (HS Regensburg)' },
-  { period: '2009 – 2012', title: 'Business Information Technology, B.Sc. (HS Regensburg)' },
+  { period: '2012 – 2014', title: 'Computer Science, M.Sc. (Technische Hochschule Regensburg)' },
+  { period: '2009 – 2012', title: 'Business Information Technology, B.Sc. (Technische Hochschule Regensburg)' },
 ];
 
 // Anonymised as role + company. Each is an excerpt: the near-identical closing

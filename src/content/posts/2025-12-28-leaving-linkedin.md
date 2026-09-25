@@ -1,6 +1,6 @@
 ---
 title: leaving linkedin, staying connected
-description: why I'm leaving linkedin but staying available for clients and collaborators
+description: Why I deleted my LinkedIn profile, and how clients and collaborators can still reach me directly for frontend and design system projects.
 pubDate: 2025-12-28
 ---
 

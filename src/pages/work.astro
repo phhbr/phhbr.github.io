@@ -1,0 +1,76 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../config';
+import { projects } from '../data/work';
+---
+
+<BaseLayout
+  title="Work: Design Systems & Web Apps"
+  description="Selected projects: accessible design systems for the public sector and a global company, a legacy data warehouse moved to the web, and automotive master data."
+>
+  <h1 class="page-title">Work</h1>
+  <p class="lede">
+    Selected projects from the last years. Clients are described by sector rather than named.
+  </p>
+
+  {
+    projects.map(({ id, title, client, period, role, context, work, stack }) => (
+      <section class="project" id={id} aria-labelledby={`${id}-title`}>
+        <h2 id={`${id}-title`}>{title}</h2>
+        <p class="meta">
+          {client}, {period}. {role}
+        </p>
+        <p>{context}</p>
+        <ul>
+          {work.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+        <p class="stack">
+          <span class="visually-hidden">Technologies: </span>
+          {stack.join(', ')}
+        </p>
+      </section>
+    ))
+  }
+
+  <section class="contact" aria-labelledby="contact">
+    <h2 id="contact">Something similar in your project?</h2>
+    <p>
+      See the <a href="/services/">services</a> or write to me directly.
+    </p>
+    <p><a class="button" href={`mailto:${SITE.email}`}>Email {SITE.email}</a></p>
+  </section>
+</BaseLayout>
+
+<style>
+  .page-title {
+    margin-top: var(--space-5);
+  }
+
+  .project {
+    max-width: var(--measure);
+    padding-top: var(--space-1);
+    border-top: 1px solid var(--rule);
+    margin-top: var(--space-4);
+  }
+
+  .project h2 {
+    margin-top: var(--space-3);
+    margin-bottom: var(--space-1);
+  }
+
+  .project ul {
+    padding-left: 1.25rem;
+  }
+
+  .stack {
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+
+  .contact {
+    margin-top: var(--space-5);
+  }
+</style>

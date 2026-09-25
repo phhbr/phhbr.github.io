@@ -3,6 +3,8 @@ import type { GetStaticPaths } from 'astro';
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { formatDate } from '../utils/date';
+import { lastModified } from '../utils/last-modified';
+import { blogPosting, graph } from '../utils/structured-data';
 
 // Posts, served at their original paths (`/:slug/`).
 export const getStaticPaths = (async () => {
@@ -12,9 +14,16 @@ export const getStaticPaths = (async () => {
 
 const { post } = Astro.props;
 const { Content } = await render(post);
+const modified = lastModified([post.filePath!]);
 ---
 
-<BaseLayout title={post.data.title} description={post.data.description}>
+<BaseLayout
+  title={post.data.title}
+  description={post.data.description}
+  noindex={post.data.noindex}
+  article={{ published: post.data.pubDate, modified }}
+  structuredData={graph(blogPosting(post, modified))}
+>
   <article class="prose">
     <header>
       <h1>{post.data.title}</h1>

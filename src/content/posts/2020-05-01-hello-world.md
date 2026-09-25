@@ -2,6 +2,7 @@
 title: hello world
 description: i welcome you to this personal page.
 pubDate: 2020-05-01
+noindex: true
 ---
 
 the website was made using jekyll and using a forked theme called [klisé](https://github.com/piharpi/klise). Thanks a lot for providing this awesome theme 🔥 

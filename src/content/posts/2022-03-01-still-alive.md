@@ -2,6 +2,7 @@
 title: "anyone here..?"
 description: still alive.
 pubDate: 2022-03-01
+noindex: true
 ---
 
 #### anyone here?

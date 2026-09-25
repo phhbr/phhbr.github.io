@@ -1,9 +1,13 @@
 export const SITE = {
   title: 'bruchner.dev',
   author: 'Philipp Bruchner',
+  // Page titles end in the name, which is what people search for.
+  homeTitle: 'Philipp Bruchner | Freelance Frontend Engineer, Nürnberg',
   description:
-    'Freelance software engineer for TypeScript web applications, design systems, accessibility and CI/CD.',
-  // Also written out in a few posts under src/content/posts.
+    'Freelance senior frontend engineer in Nürnberg: accessible design systems, web components and TypeScript apps (Angular, React). Remote or on-site.',
+  // Region only; the street address is on /legal/ where the law requires it.
+  locality: 'Nürnberg',
+  region: 'Bayern',
   email: 'hello@bruchner.dev',
   github: 'https://github.com/phhbr',
   lang: 'en-GB',

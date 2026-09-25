@@ -15,6 +15,8 @@ const posts = defineCollection({
     pubDate: z.coerce.date(),
     // Everything before the relaunch is an archive; new posts set `archived: false`.
     archived: z.boolean().default(true),
+    // Too thin to be worth a search result; the URL keeps working.
+    noindex: z.boolean().default(false),
   }),
 });
 
@@ -23,6 +25,8 @@ const services = defineCollection({
   schema: z.object({
     title: z.string(),
     summary: z.string(),
+    // Meta description for the service's own page (about 120–160 characters).
+    description: z.string(),
     order: z.number(),
     skills: z.array(z.string()),
   }),
