@@ -22,6 +22,7 @@ Dependencies are only installed once a release is at least 5 days old (`minimumR
 - `src/content/services/`: service offerings shown on `/` and `/services/`
 - `src/data/cv.ts`: CV data rendered on `/cv/`
 - `scripts/check-inline.mjs`: fails the build on inline scripts or styles, which the CSP blocks
-- `tests/`: Playwright smoke tests and axe accessibility checks (desktop and mobile)
+- `tests/`: Playwright smoke tests, axe accessibility checks and a CSP test (desktop and mobile)
+- `deploy/`: server config for the edge Caddy (security headers)
 
 The migration from the former Jekyll site at phhbr.de is tracked in [docs/migration-plan.md](docs/migration-plan.md).

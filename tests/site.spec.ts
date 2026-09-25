@@ -24,6 +24,25 @@ for (const path of legacyPosts) {
   });
 }
 
+test('external links do not leak the opener or referrer', async ({ page, baseURL }) => {
+  for (const path of [...pages.map(({ path }) => path), ...legacyPosts]) {
+    await page.goto(path);
+    for (const link of await page.locator('a[href^="http"]').all()) {
+      const href = (await link.getAttribute('href'))!;
+      if (href.startsWith(baseURL!) || href.startsWith('https://bruchner.dev')) continue;
+      expect(await link.getAttribute('rel'), `${path}: ${href}`).toBe('noopener noreferrer');
+    }
+  }
+});
+
+test('llms.txt lists the main pages', async ({ request }) => {
+  const response = await request.get('/llms.txt');
+  expect(response.status()).toBe(200);
+  const text = await response.text();
+  expect(text).toMatch(/^# Philipp Bruchner\n\n> /);
+  for (const path of ['/services/', '/cv/', '/relaunch/']) expect(text).toContain(`https://bruchner.dev${path}`);
+});
+
 test('unknown paths show the 404 page', async ({ page }) => {
   const response = await page.goto('/does-not-exist/');
   expect(response?.status()).toBe(404);

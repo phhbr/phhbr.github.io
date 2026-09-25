@@ -2,7 +2,7 @@
 
 Rebrand and rebuild the personal site as a freelance portfolio: Jekyll → Astro, GitHub Pages → the existing Caddy on the VPS, deploy-on-push via GitHub Actions.
 
-**Status:** in progress on branch `feat/astro-bruchner-dev`. Phases 1 and 2 done (2026-09-25). Package manager is pnpm 12 with a 5-day `minimumReleaseAge`. Playwright smoke tests and axe (WCAG 2.2 AA, both themes) in `tests/`. Contact address is `hello@phhbr.de` until 0.2 is done.
+**Status:** in progress on branch `feat/astro-bruchner-dev`. Phases 1 and 2 done (2026-09-25). Package manager is pnpm 12 with a 5-day `minimumReleaseAge`. Playwright smoke tests and axe (WCAG 2.2 AA, both themes) in `tests/`. Phase 3 done in the repo (2026-09-25); 3.9 and 3.10 land with Phase 4. Contact address is `hello@phhbr.de` until 0.2 is done.
 
 ---
 
@@ -91,27 +91,30 @@ All 301s live in the edge Caddy config (4.1). Astro's `redirects` option is **no
 
 ## Phase 3 — Security hardening
 
-- [ ] 3.1 **Self-hosted fonts** (via 1.2 / 2.1): removes the only third-party request and the GDPR/Impressum contradiction
-- [ ] 3.2 **CSP as a static header, no inline code anywhere**:
-      `default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests`
-      Ship as `Content-Security-Policy-Report-Only` first, verify clean, then enforce.
+- [x] 3.1 **Self-hosted fonts** (via 1.2 / 2.1): removes the only third-party request and the GDPR/Impressum contradiction. Tested: no request leaves the site
+- [x] 3.2 **CSP as a static header, no inline code anywhere**, in `deploy/security-headers.caddy`:
+      `default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'`
+      Only what the site uses: no `data:` images, no fetches, and `object-src` is covered by `default-src 'none'`. `upgrade-insecure-requests` is dropped: every resource is same-origin, so it would do nothing in production and breaks local testing over http.
+      The snippet takes the header name as an argument, so it ships as `Content-Security-Policy-Report-Only` first (5.1) and is enforced in 5.2.
+      `tests/csp.spec.ts` reads the policy from the snippet, serves every page and the theme toggle under it, and fails on any violation; it also checks that injected inline script is blocked.
       *Why no hashes:* Astro's `security.csp` emits a `<meta>` CSP, and a header CSP applies on top of it (both must pass). With `default-src 'none'` in the header, hashed inline code would still be blocked unless the header is loosened. A meta CSP also can't express `frame-ancestors` or report-only. A policy with no inline code never drifts
 - [x] 3.3 **CI guard for 3.2**: `scripts/check-inline.mjs`, part of `pnpm run build`: fails if any `dist/**/*.html` contains a `<style>` element, a `style=` attribute, or a `<script>` without `src` (except `type="application/ld+json"`)
-- [ ] 3.4 Other headers: `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy: camera=(), microphone=(), geolocation=()`, `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Resource-Policy: same-origin`, `X-Frame-Options: DENY`. Strip the `Server` header. (No `interest-cohort`: Chrome logs it as an unrecognised feature, which costs the Lighthouse Best Practices 100)
-- [ ] 3.5 **HSTS** on bruchner.dev: `max-age=63072000; includeSubDomains; preload`. No preload-list submission is needed, because the whole `.dev` TLD is already preloaded
-- [ ] 3.6 Remove the `<meta name="referrer">` tag (header supersedes it) and the leftover Pinterest `p:domain_verify` token
-- [ ] 3.7 **pnpm 12** pinned via `packageManager` (itself at least 5 days old). `pnpm-workspace.yaml`: `minimumReleaseAge: 7200` (5 days) and `allowBuilds` (install scripts denied unless listed; esbuild's is not needed). **Commit `pnpm-lock.yaml`** + `.github/dependabot.yml` for `npm` (covers pnpm lockfiles) and `github-actions`, weekly, **grouped**, with `cooldown.default-days: 5` so its PRs respect the same age rule. `pnpm audit --audit-level=high` runs as a **report-only** job, not a deploy gate: an advisory in a build-only dependency must not block an urgent Impressum fix
-- [ ] 3.8 Enable GitHub secret scanning + push protection
+- [x] 3.4 Other headers (same snippet, checked against Caddy 2.11 in Docker): `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy: camera=(), microphone=(), geolocation=()`, `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Resource-Policy: same-origin`, `X-Frame-Options: DENY`. Strip the `Server` header. (No `interest-cohort`: Chrome logs it as an unrecognised feature, which costs the Lighthouse Best Practices 100)
+- [x] 3.5 **HSTS** on bruchner.dev (same snippet, imported only by the bruchner.dev site block): `max-age=63072000; includeSubDomains; preload`. No preload-list submission is needed, because the whole `.dev` TLD is already preloaded
+- [x] 3.6 Remove the `<meta name="referrer">` tag (header supersedes it) and the leftover Pinterest `p:domain_verify` token (gone with the Jekyll templates)
+- [x] 3.7 **pnpm 12** pinned via `packageManager` (itself at least 5 days old). `pnpm-workspace.yaml`: `minimumReleaseAge: 7200` (5 days) and `allowBuilds` (install scripts denied unless listed; esbuild's is not needed). **Commit `pnpm-lock.yaml`** + `.github/dependabot.yml` for `npm` (covers pnpm lockfiles) and `github-actions`, weekly, **grouped**, with `cooldown.default-days: 5` so its PRs respect the same age rule. `.github/dependabot.yml` only takes effect once it is on the default branch (6.3); check then that Dependabot handles the pnpm 12 lockfile. `pnpm audit --audit-level=high` runs as a **report-only** job (4.2), not a deploy gate: an advisory in a build-only dependency must not block an urgent Impressum fix
+- [x] 3.8 GitHub secret scanning + push protection enabled (2026-09-25). Once the repo is private (6.2), repo-level secret scanning needs GitHub's paid Secret Protection; push protection for your own account keeps working
 - [ ] 3.9 Host side: the deploy key can only run `rrsync` into `/srv/bruchner.dev/site` (0.4). Uploaded files are `D755,F644`; Caddy only reads. CI never writes Caddy config
 - [ ] 3.10 CI hardening: pin all actions by commit SHA, least-privilege `permissions:` per job, no `pull_request_target`, no secrets in fork PRs
-- [ ] 3.11 All external links get `rel="noopener noreferrer"`. Email stays a `mailto:`, since a contact form would add a backend and a spam surface for no real gain. **Exception:** on `/legal` the address must be rendered as **plain text**, since § 5 DDG is not satisfied by a `mailto:` link alone
+- [x] 3.11 All external links get `rel="noopener noreferrer"`: components set it, and a Sätteri HAST plugin (`src/utils/external-links.ts`) adds it to Markdown links; tested on every page. Email stays a `mailto:`, since a contact form would add a backend and a spam surface for no real gain. **Exception:** on `/legal` the address must be rendered as **plain text**, since § 5 DDG is not satisfied by a `mailto:` link alone
 - [x] 3.12 `/.well-known/security.txt` with `Contact:` from `SITE.email` and an `Expires` refreshed on every build
 - [x] 3.13 `robots.txt` pointing at `https://bruchner.dev/sitemap-index.xml`; sitemap generated with the correct origin
+- [x] 3.14 `/llms.txt` (llmstxt.org format) generated from config, services and posts. Not a security item, but the same kind of machine-readable file; few crawlers read it yet, so it's cheap and optional
 
 ## Phase 4 — Serving + CI/CD
 
 - [ ] 4.1 `deploy/bruchner.dev.caddy`: the edge site blocks, **versioned in the repo and applied to the host by hand**:
-  - `bruchner.dev`: `root * /srv/bruchner.dev/site`, `file_server`, `encode zstd gzip`, all headers from 3.2–3.5, `-Server`
+  - `bruchner.dev`: `root * /srv/bruchner.dev/site`, `file_server`, `encode zstd gzip`, `import security_headers …` from `deploy/security-headers.caddy` (3.2–3.5)
   - `Cache-Control: public, max-age=31536000, immutable` for `/_astro/*`; `no-cache` for HTML
   - Legacy redirect map from the table above (`redir … permanent`)
   - `handle_errors` → rewrite to `/404.html`
