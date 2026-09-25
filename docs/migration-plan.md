@@ -40,7 +40,7 @@ All 301s live in the edge Caddy config (4.1). Astro's `redirects` option is **no
 
 ## Phase 0 — Prep (no code)
 
-- [ ] 0.0 **Delegate DNSSEC for phhbr.de.** deSEC signs the zone, but there is no DS record at DENIC, so the signatures are never checked (and mail DNS can be spoofed). Copy the DS records from deSEC (domain → ⓘ) into phhbr.de's registrar and verify with dnsviz.net. This is also the prerequisite for 0.1: deSEC raises the domain limit (currently 1) only once existing domains are securely delegated
+- [x] 0.0 **Delegate DNSSEC for phhbr.de.** Done 2026-09-25: DS `15027 13 2 30CACDA8…55CC6FEB` at DENIC, validated by 1.1.1.1. netcup's form defaults the algorithm to DSA (3); it must be set to ECDSAP256SHA256 (13) or DENIC rejects the key. deSEC signs the zone, but there is no DS record at DENIC, so the signatures are never checked (and mail DNS can be spoofed). Copy the DS records from deSEC (domain → ⓘ) into phhbr.de's registrar and verify with dnsviz.net. This is also the prerequisite for 0.1: deSEC raises the domain limit (currently 1) only once existing domains are securely delegated
 - [ ] 0.1 **DNS for bruchner.dev.** The domain is registered and currently uses netcup's default nameservers with no records. Move the NS to **deSEC** before adding anything, so both domains live in one place with DNSSEC and an API. Then add A/AAAA for apex + `www` → VPS (not yet; see 5.1)
 - [ ] 0.2 **Mail: `hello@bruchner.dev` on Proton** (phhbr.de is already on Proton; check that the plan allows a second custom domain)
   - Proton → Settings → Domain names → Add `bruchner.dev`
