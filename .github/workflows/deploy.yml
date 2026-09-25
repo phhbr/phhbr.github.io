@@ -3,8 +3,7 @@ name: Deploy
 
 on:
   push:
-    # TODO: drop feat/astro-bruchner-dev once it is merged into main.
-    branches: [main, feat/astro-bruchner-dev]
+    branches: [main]
   workflow_dispatch:
     inputs:
       ref:
