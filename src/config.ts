@@ -9,6 +9,10 @@ export const SITE = {
   locality: 'Nürnberg',
   region: 'Bayern',
   email: 'hello@bruchner.dev',
+  // Dedicated business number, offered next to e-mail wherever the site asks for contact.
+  phone: '+49 15679 121402',
+  // Shown in the home page hero. Update it when a project fills the calendar.
+  availability: 'Available for new projects, remote or on-site across Germany.',
   github: 'https://github.com/phhbr',
   lang: 'en-GB',
 };
@@ -19,8 +23,7 @@ export const LEGAL = {
   street: 'Greifswalder Straße 4',
   city: '90425 Nürnberg',
   country: 'Germany',
-  // Dedicated business number.
-  phone: '+49 15679 121402',
+  phone: SITE.phone,
   // Umsatzsteuer-Identifikationsnummer, if one has been issued (§ 5 Abs. 1 Nr. 6 DDG).
   vatId: undefined as string | undefined,
   // Named as processor on /privacy/.

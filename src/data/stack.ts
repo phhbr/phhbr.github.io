@@ -1,4 +1,4 @@
-// Shown on the home page and listed as `knowsAbout` in the JSON-LD.
+// Listed as `knowsAbout` in the JSON-LD. Per-project stacks are on /work/.
 export const stack = [
   'TypeScript',
   'Angular',

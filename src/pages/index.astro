@@ -1,12 +1,11 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import ContactLinks from '../components/ContactLinks.astro';
 import Hero from '../components/Hero.astro';
-import TechStack from '../components/TechStack.astro';
 import Testimonial from '../components/Testimonial.astro';
 import { testimonials } from '../data/cv';
 import { projects } from '../data/work';
-import { SITE } from '../config';
 import { graph, person, professionalService, website } from '../utils/structured-data';
 
 const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
@@ -34,16 +33,17 @@ const services = (await getCollection('services')).sort((a, b) => a.data.order -
 
   <section aria-labelledby="work">
     <h2 id="work">Selected work</h2>
-    <ul class="ruled">
+    <ul class="ruled projects">
       {
-        projects.map(({ id, title, client, period }) => (
+        projects.map(({ id, title, summary, client, period }) => (
           <li>
-            <span class="label">{period}</span>
-            <span>
+            <h3>
               <a href={`/work/#${id}`}>{title}</a>
-              <br />
-              <span class="muted">{client}</span>
-            </span>
+            </h3>
+            <p>{summary}</p>
+            <p class="meta">
+              {client}, {period}
+            </p>
           </li>
         ))
       }
@@ -51,28 +51,40 @@ const services = (await getCollection('services')).sort((a, b) => a.data.order -
     <p class="more"><a href="/work/">All projects in detail</a></p>
   </section>
 
-  <section aria-labelledby="stack">
-    <h2 id="stack">Tools I work with</h2>
-    <TechStack />
-  </section>
-
   <section aria-labelledby="feedback">
     <h2 id="feedback">What colleagues say</h2>
     <div class="quotes">
-      {testimonials.map((t) => <Testimonial {...t} />)}
+      {testimonials.map((t) => <Testimonial {...t} quote={t.highlight} />)}
     </div>
   </section>
 
   <section class="closing" aria-labelledby="contact">
     <h2 id="contact">Have a project in mind?</h2>
     <p>Tell me what you're building and where you're stuck.</p>
-    <p><a class="button" href={`mailto:${SITE.email}`}>Email {SITE.email}</a></p>
+    <ContactLinks />
   </section>
 </BaseLayout>
 
 <style>
   .more {
     margin-top: var(--space-2);
+  }
+
+  .projects > li {
+    display: block;
+  }
+
+  .projects h3 {
+    margin: 0 0 0.35rem;
+  }
+
+  .projects p {
+    max-width: var(--measure);
+    margin-bottom: 0.35rem;
+  }
+
+  .projects .meta {
+    margin: 0;
   }
 
   .quotes {

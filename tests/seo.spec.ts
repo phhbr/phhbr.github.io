@@ -30,6 +30,16 @@ for (const path of noindexPosts) {
   });
 }
 
+test('pages share a link preview image that exists', async ({ page, request }) => {
+  await page.goto('/');
+  const image = await page.locator('meta[property="og:image"]').getAttribute('content');
+  expect(image).toBe('https://bruchner.dev/og.png');
+  const response = await request.get(new URL(image!).pathname);
+  expect(response.status()).toBe(200);
+  expect(response.headers()['content-type']).toBe('image/png');
+  await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image');
+});
+
 const expectedTypes: Record<string, string[]> = {
   '/': ['Person', 'ProfessionalService', 'WebSite'],
   '/services/': ['ProfessionalService'],

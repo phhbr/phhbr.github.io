@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
+import ContactLinks from '../../components/ContactLinks.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { SITE } from '../../config';
 import { graph, professionalService } from '../../utils/structured-data';
@@ -50,7 +51,7 @@ const services = (await getCollection('services')).sort((a, b) => a.data.order -
 
   <section class="contact" aria-labelledby="contact">
     <h2 id="contact">Start a conversation</h2>
-    <p><a class="button" href={`mailto:${SITE.email}`}>Email {SITE.email}</a></p>
+    <ContactLinks />
   </section>
 </BaseLayout>
 

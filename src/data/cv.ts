@@ -7,6 +7,8 @@ export interface Role {
 
 export interface Testimonial {
   quote: string;
+  // The most specific sentence of the quote, shown on the home page.
+  highlight: string;
   role: string;
   company: string;
 }
@@ -38,23 +40,30 @@ export const education: Role[] = [
 ];
 
 // Anonymised as role + company. Each is an excerpt: the near-identical closing
-// line ("Any team would be lucky…") is omitted.
+// line ("Any team would be lucky…") is omitted. The CV shows `quote`; the home
+// page shows `highlight`, which skips the "pleasure to work with" openers.
 export const testimonials: Testimonial[] = [
   {
     quote:
       'It was a true pleasure to work with Philipp for over two years. His initiative in creating reusable libraries and applications significantly benefited not only our team, but the entire department.',
+    highlight:
+      'His initiative in creating reusable libraries and applications significantly benefited not only our team, but the entire department.',
     role: 'Principal Software Engineer / Tech Lead',
     company: 'GfK',
   },
   {
     quote:
       "I had the great pleasure of working with Philipp and can wholeheartedly recommend him. He's an outstanding engineer and a true team player with a strategic mindset.",
+    highlight:
+      "He's an outstanding engineer and a true team player with a strategic mindset.",
     role: 'Principal Research Scientist',
     company: 'NielsenIQ',
   },
   {
     quote:
       "I had the pleasure of working closely with Philipp in the same team, and I can confidently say that he's one of those rare engineers who consistently goes above and beyond.",
+    highlight:
+      "He's one of those rare engineers who consistently goes above and beyond.",
     role: 'Senior Software Engineer',
     company: 'Boku',
   },

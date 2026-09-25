@@ -1,6 +1,6 @@
 ---
+import ContactLinks from '../components/ContactLinks.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { SITE } from '../config';
 import { projects } from '../data/work';
 ---
 
@@ -39,7 +39,7 @@ import { projects } from '../data/work';
     <p>
       See the <a href="/services/">services</a> or write to me directly.
     </p>
-    <p><a class="button" href={`mailto:${SITE.email}`}>Email {SITE.email}</a></p>
+    <ContactLinks />
   </section>
 </BaseLayout>
 

@@ -6,7 +6,6 @@ const links = [
   { href: '/services/', label: 'Services' },
   { href: '/work/', label: 'Work' },
   { href: '/cv/', label: 'CV' },
-  { href: '/writing/', label: 'Writing' },
 ];
 const current = Astro.url.pathname;
 ---
@@ -59,6 +58,14 @@ const current = Astro.url.pathname;
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+
+  /* Narrow screens: wordmark and theme toggle share the first row, links the second. */
+  @media (max-width: 40rem) {
+    nav {
+      order: 1;
+      flex-basis: 100%;
+    }
   }
 
   nav a {

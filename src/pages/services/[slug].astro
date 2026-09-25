@@ -1,6 +1,7 @@
 ---
 import type { GetStaticPaths } from 'astro';
 import { getCollection, render } from 'astro:content';
+import ContactLinks from '../../components/ContactLinks.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { SITE } from '../../config';
 import { graph, service } from '../../utils/structured-data';
@@ -34,7 +35,7 @@ const { Content } = await render(entry);
       Based in {SITE.locality}, working remotely or on-site.
       See <a href="/work/">selected projects</a> or write to me directly.
     </p>
-    <p><a class="button" href={`mailto:${SITE.email}`}>Email {SITE.email}</a></p>
+    <ContactLinks />
   </section>
 </BaseLayout>
 

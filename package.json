@@ -10,7 +10,8 @@
     "check": "astro check",
     "build": "astro check && astro build && node scripts/check-inline.mjs",
     "preview": "astro preview",
-    "test": "playwright test"
+    "test": "playwright test",
+    "og": "node scripts/og-image.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-satteri": "^0.4.1",
