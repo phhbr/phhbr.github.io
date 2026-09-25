@@ -2,7 +2,7 @@
 
 Rebrand and rebuild the personal site as a freelance portfolio: Jekyll → Astro, GitHub Pages → the existing Caddy on the VPS, deploy-on-push via GitHub Actions.
 
-**Status:** in progress on branch `feat/astro-bruchner-dev`. Phases 1 and 2 done (2026-09-25) except JSON-LD (2.3) and the axe pass (2.7); Playwright smoke tests in `tests/`. Contact address is `hello@phhbr.de` until 0.2 is done.
+**Status:** in progress on branch `feat/astro-bruchner-dev`. Phases 1 and 2 done (2026-09-25). Package manager is pnpm 12 with a 5-day `minimumReleaseAge`. Playwright smoke tests and axe (WCAG 2.2 AA, both themes) in `tests/`. Contact address is `hello@phhbr.de` until 0.2 is done.
 
 ---
 
@@ -75,7 +75,7 @@ All 301s live in the edge Caddy config (4.1). Astro's `redirects` option is **no
 
 - [x] 2.1 Tokens in `src/styles/tokens.css`: custom properties + `color-scheme` / `light-dark()`. **Martian Mono** (variable, width axis) for headings and UI chrome, **Atkinson Hyperlegible Next** for body. Palette: blueprint paper `#EDF1F5` / deep blue `#0E1620`, ink, muted, one inspector-blue accent; all text pairs ≥ 5.5:1. Self-hosted, subset, `font-display: swap`, preloaded via `<link rel="preload">` to the hashed font URL
 - [x] 2.2 Dark mode defaults to `prefers-color-scheme` via CSS only; toggle writes `localStorage` + `data-theme` on `<html>`. **Fix the FOUC** with a tiny **external, blocking** `public/theme.js` loaded as `<script is:inline src="/theme.js">` in `<head>`. One small, cacheable same-origin request, with no CSP hash to keep in sync
-- [ ] 2.3 `BaseLayout` (head, meta, OG, font preloads) done. **Open:** JSON-LD `Person` + `ProfessionalService` (`ld+json` isn't executed, so CSP doesn't apply). Separate page/post layouts turned out unnecessary
+- [x] 2.3 `BaseLayout` (head, meta, OG, font preloads); JSON-LD `Person` + `ProfessionalService` (with the services as an `OfferCatalog`) + `WebSite` on `/`, country only, no street address (`ld+json` isn't executed, so CSP doesn't apply). Separate page/post layouts turned out unnecessary
 - [x] 2.4 Components: `Nav`, `Footer`, `Hero`, `TechStack`, `Testimonial`, `ThemeToggle`. Services use a ruled list instead of cards; long text uses a `.prose` class
 - [x] 2.5 Pages:
   - `/`: hero with one-line positioning + availability, 4 services, tech stack, 3 testimonials, single CTA. The hero shows the name as if selected in the browser inspector: highlight, guide lines and a tooltip with its real role, name and contrast ratio (decorative, `aria-hidden`)
@@ -87,7 +87,7 @@ All 301s live in the edge Caddy config (4.1). Astro's `redirects` option is **no
   - `/privacy`: separate Datenschutzerklärung that is now accurate: self-hosted fonts, no analytics, no cookies. Must name the **VPS provider** (AVV in place) and **Proton** (mail) as processors, and describe access logging exactly as configured in 4.1
   - `/404`
 - [x] 2.6 Visual language: monospace kickers/labels, thin rules, single accent colour, `::selection` styling, subtle dotted/grid background, generous whitespace. Zero client JS beyond the toggle
-- [ ] 2.7 A11y (done except the axe run in Verification 11): visible focus rings, skip link, `prefers-reduced-motion`, semantic landmarks, contrast ≥ 4.5:1 in both themes. The CV claims a11y expertise, so the site should show it
+- [x] 2.7 A11y, checked by axe-core in `tests/a11y.spec.ts` on every page in both themes: visible focus rings, skip link, `prefers-reduced-motion`, semantic landmarks, contrast ≥ 4.5:1 in both themes. The CV claims a11y expertise, so the site should show it
 
 ## Phase 3 — Security hardening
 
@@ -96,11 +96,11 @@ All 301s live in the edge Caddy config (4.1). Astro's `redirects` option is **no
       `default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests`
       Ship as `Content-Security-Policy-Report-Only` first, verify clean, then enforce.
       *Why no hashes:* Astro's `security.csp` emits a `<meta>` CSP, and a header CSP applies on top of it (both must pass). With `default-src 'none'` in the header, hashed inline code would still be blocked unless the header is loosened. A meta CSP also can't express `frame-ancestors` or report-only. A policy with no inline code never drifts
-- [x] 3.3 **CI guard for 3.2**: `scripts/check-inline.mjs`, part of `npm run build`: fails if any `dist/**/*.html` contains a `<style>` element, a `style=` attribute, or a `<script>` without `src` (except `type="application/ld+json"`)
+- [x] 3.3 **CI guard for 3.2**: `scripts/check-inline.mjs`, part of `pnpm run build`: fails if any `dist/**/*.html` contains a `<style>` element, a `style=` attribute, or a `<script>` without `src` (except `type="application/ld+json"`)
 - [ ] 3.4 Other headers: `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy: camera=(), microphone=(), geolocation=()`, `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Resource-Policy: same-origin`, `X-Frame-Options: DENY`. Strip the `Server` header. (No `interest-cohort`: Chrome logs it as an unrecognised feature, which costs the Lighthouse Best Practices 100)
 - [ ] 3.5 **HSTS** on bruchner.dev: `max-age=63072000; includeSubDomains; preload`. No preload-list submission is needed, because the whole `.dev` TLD is already preloaded
 - [ ] 3.6 Remove the `<meta name="referrer">` tag (header supersedes it) and the leftover Pinterest `p:domain_verify` token
-- [ ] 3.7 **Commit `package-lock.json`** (never gitignore it) + `.github/dependabot.yml` for `npm` and `github-actions`, weekly, **grouped** (one PR per ecosystem). `npm audit --audit-level=high` runs as a **report-only** job, not a deploy gate: an advisory in a build-only dependency must not block an urgent Impressum fix
+- [ ] 3.7 **pnpm 12** pinned via `packageManager` (itself at least 5 days old). `pnpm-workspace.yaml`: `minimumReleaseAge: 7200` (5 days) and `allowBuilds` (install scripts denied unless listed; esbuild's is not needed). **Commit `pnpm-lock.yaml`** + `.github/dependabot.yml` for `npm` (covers pnpm lockfiles) and `github-actions`, weekly, **grouped**, with `cooldown.default-days: 5` so its PRs respect the same age rule. `pnpm audit --audit-level=high` runs as a **report-only** job, not a deploy gate: an advisory in a build-only dependency must not block an urgent Impressum fix
 - [ ] 3.8 Enable GitHub secret scanning + push protection
 - [ ] 3.9 Host side: the deploy key can only run `rrsync` into `/srv/bruchner.dev/site` (0.4). Uploaded files are `D755,F644`; Caddy only reads. CI never writes Caddy config
 - [ ] 3.10 CI hardening: pin all actions by commit SHA, least-privilege `permissions:` per job, no `pull_request_target`, no secrets in fork PRs
@@ -119,12 +119,12 @@ All 301s live in the edge Caddy config (4.1). Astro's `redirects` option is **no
   - `www.bruchner.dev` → `redir https://bruchner.dev{uri} permanent`
   - `phhbr.de, www.phhbr.de` → `redir https://bruchner.dev{uri} permanent` (legacy paths then hit the map above; two hops is acceptable)
 - [ ] 4.2 `.github/workflows/deploy.yml`, triggered on push to `main` **and** `workflow_dispatch` (with a `ref` input):
-  - job `build`: checkout → setup-node (cached) → `npm ci` → `astro check` → `npm run build` → 3.3 inline guard → write `dist/version.txt` with the commit SHA → upload artifact
+  - job `build`: checkout → `pnpm/action-setup` (version from `packageManager`) → setup-node (pnpm cache) → `pnpm install --frozen-lockfile` → `pnpm run build` (runs `astro check`) → 3.3 inline guard → write `dist/version.txt` with the commit SHA → upload artifact
   - job `deploy` (needs build): `rsync -rlc --delete-delay --delay-updates --chmod=D755,F644 dist/ deploy@$VPS_HOST:` → `curl https://bruchner.dev/version.txt` must equal the SHA
   - Secrets: `VPS_HOST`, `VPS_SSH_KEY`, `VPS_SSH_KNOWN_HOSTS`. Pin the host key; **never** `StrictHostKeyChecking=no`
   - Concurrency group with `cancel-in-progress: false`: queue deploys, don't kill one mid-rsync
   - **Rollback** = `workflow_dispatch` with an earlier `ref`. Git is the release history
-- [ ] 4.3 `.github/workflows/pr.yml` on pull_request: build (includes `astro check` + inline guard) + `npm test` (Playwright: every page renders, legacy slugs, 404, no third-party requests, no horizontal scroll, skip link, theme toggle) + link check (`lychee`) + Lighthouse CI. No deploy, no secrets
+- [ ] 4.3 `.github/workflows/pr.yml` on pull_request: build (includes `astro check` + inline guard) + `pnpm test` (Playwright + axe: every page renders, legacy slugs, 404, no third-party requests, no horizontal scroll, skip link, theme toggle) + link check (`lychee`) + Lighthouse CI. No deploy, no secrets
 
 ## Phase 5 — Cutover
 
@@ -148,7 +148,7 @@ Nothing is merged to `master` during this phase: GitHub Pages builds phhbr.de fr
 
 ## Verification
 
-1. `npm run build` clean; `astro check` → zero TS errors; 3.3 inline guard passes
+1. `pnpm run build` clean; `astro check` → zero TS errors; 3.3 inline guard passes
 2. **securityheaders.com** → **A+** on `bruchner.dev`
 3. **Mozilla Observatory** → 100 / A+
 4. Devtools Network on hard reload: **zero third-party requests** (especially `fonts.gstatic.com`)
@@ -158,8 +158,8 @@ Nothing is merged to `master` during this phase: GitHub Pages builds phhbr.de fr
 8. Every row of the legacy URL table returns the stated status. Run `lychee` against the old `_site/sitemap.xml` plus the redirect paths
 9. Push to `main` → `https://bruchner.dev/version.txt` shows the new SHA; `workflow_dispatch` of an older ref rolls back
 10. On the VPS: `sudo -u deploy -s` fails; `ssh -i <deploy key> deploy@host id` is refused by `rrsync`
-11. `axe` + keyboard-only pass on `/` and `/services` in both themes
-12. `package-lock.json` is tracked; `dependabot.yml` validates in the repo's *Insights → Dependency graph → Dependabot* tab
+11. `pnpm test` green (includes axe WCAG 2.2 AA on every page in both themes); keyboard-only pass on `/` and `/services`
+12. `pnpm-lock.yaml` is tracked; `dependabot.yml` validates in the repo's *Insights → Dependency graph → Dependabot* tab
 13. Mail: Proton DNS checks green; mail-tester.com ≥ 9/10 from `hello@bruchner.dev`; inbound to `hello@bruchner.dev` **and** the old `@phhbr.de` addresses still arrives after 5.4
 
 ---

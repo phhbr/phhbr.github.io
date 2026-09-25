@@ -1,6 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const PORT = 4321;
+// Not Astro's default 4321, so a running `pnpm dev` is never mistaken for the build.
+const PORT = 4329;
 
 export default defineConfig({
   testDir: './tests',
@@ -17,7 +18,7 @@ export default defineConfig({
   ],
   // Tests run against the production build (`npm run build` first).
   webServer: {
-    command: `npx astro preview --port ${PORT}`,
+    command: `pnpm exec astro preview --port ${PORT}`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
   },

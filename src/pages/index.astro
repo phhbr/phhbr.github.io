@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
+import JsonLd from '../components/JsonLd.astro';
 import TechStack from '../components/TechStack.astro';
 import Testimonial from '../components/Testimonial.astro';
 import { testimonials } from '../data/cv';
@@ -11,6 +12,7 @@ const services = (await getCollection('services')).sort((a, b) => a.data.order -
 ---
 
 <BaseLayout>
+  <JsonLd />
   <Hero />
 
   <section aria-labelledby="services">

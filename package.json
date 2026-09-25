@@ -17,11 +17,13 @@
     "@astrojs/sitemap": "^3.7.4",
     "@fontsource-variable/atkinson-hyperlegible-next": "^5.3.0",
     "@fontsource-variable/martian-mono": "^5.3.0",
-    "astro": "^7.3.5"
+    "astro": "^7.3.3"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.63.0",
     "typescript": "^6.0.3"
-  }
+  },
+  "packageManager": "pnpm@12.5.1"
 }

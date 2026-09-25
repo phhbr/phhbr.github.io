@@ -1,0 +1,8 @@
+# Only install package versions that have been public for at least 5 days
+# (in minutes), so compromised releases are usually caught and pulled first.
+minimumReleaseAge: 7200
+
+# Install scripts are blocked unless listed here (strictDepBuilds is on by default).
+allowBuilds:
+  # Only verifies its binary, which ships as a separate platform package.
+  esbuild: false

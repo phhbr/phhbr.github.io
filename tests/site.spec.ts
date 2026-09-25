@@ -1,17 +1,5 @@
 import { expect, test } from '@playwright/test';
-
-const pages = [
-  { path: '/', heading: 'Philipp Bruchner' },
-  { path: '/services/', heading: 'Services' },
-  { path: '/cv/', heading: 'Curriculum vitae' },
-  { path: '/writing/', heading: 'Writing' },
-  { path: '/relaunch/', heading: 'new name, new site' },
-  { path: '/legal/', heading: 'Legal notice / Impressum' },
-  { path: '/privacy/', heading: 'Privacy policy / Datenschutzerklärung' },
-];
-
-// Posts from the Jekyll site must keep their URLs.
-const legacyPosts = ['/hello-world/', '/still-alive/', '/freelance-availability/', '/leaving-linkedin/'];
+import { legacyPosts, pages } from './pages';
 
 for (const { path, heading } of pages) {
   test(`${path} renders with one h1 and no console errors`, async ({ page }) => {
@@ -48,6 +36,14 @@ test('home page does not scroll horizontally', async ({ page }) => {
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
   );
   expect(overflow).toBeLessThanOrEqual(0);
+});
+
+test('home page describes the person and service as JSON-LD', async ({ page }) => {
+  await page.goto('/');
+  const blocks = await page.locator('script[type="application/ld+json"]').allTextContents();
+  expect(blocks).toHaveLength(1);
+  const graph: { '@type': string }[] = JSON.parse(blocks[0])['@graph'];
+  expect(graph.map((node) => node['@type']).sort()).toEqual(['Person', 'ProfessionalService', 'WebSite']);
 });
 
 test('no request leaves the site', async ({ page, baseURL }) => {

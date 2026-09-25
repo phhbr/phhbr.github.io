@@ -4,14 +4,16 @@ Personal site and freelance portfolio of Philipp Bruchner. Built with [Astro](ht
 
 ## Development
 
-Requires Node.js 22.12 or newer (see `.nvmrc`).
+Requires Node.js 22.12 or newer (see `.nvmrc`) and pnpm, pinned in `package.json` (Corepack picks it up).
 
 ```bash
-npm ci
-npm run dev      # http://localhost:4321
-npm run build    # astro check + build + inline-code guard → dist/
-npm run preview
+pnpm install
+pnpm dev         # http://localhost:4321
+pnpm build       # astro check + build + inline-code guard → dist/
+pnpm test        # Playwright + axe against the build (run `pnpm build` first)
 ```
+
+Dependencies are only installed once a release is at least 5 days old (`minimumReleaseAge` in `pnpm-workspace.yaml`), and install scripts run only when allowed there.
 
 ## Layout
 
@@ -20,5 +22,6 @@ npm run preview
 - `src/content/services/`: service offerings shown on `/` and `/services/`
 - `src/data/cv.ts`: CV data rendered on `/cv/`
 - `scripts/check-inline.mjs`: fails the build on inline scripts or styles, which the CSP blocks
+- `tests/`: Playwright smoke tests and axe accessibility checks (desktop and mobile)
 
 The migration from the former Jekyll site at phhbr.de is tracked in [docs/migration-plan.md](docs/migration-plan.md).
