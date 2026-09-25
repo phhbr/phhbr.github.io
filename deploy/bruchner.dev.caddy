@@ -9,11 +9,11 @@
 import security-headers.caddy
 
 # Headers for every response, including error pages (handle_errors runs a
-# separate route that does not inherit them). The launch switch lives here:
-# 5.1 report-only + noindex; 5.2 Content-Security-Policy, no X-Robots-Tag.
+# separate route that does not inherit them). Live since plan 5.2: enforced CSP,
+# indexable. (Before launch this used Content-Security-Policy-Report-Only plus
+# `header X-Robots-Tag "noindex"`.)
 (bruchner_dev_response_headers) {
-	import bruchner_dev_headers Content-Security-Policy-Report-Only
-	header X-Robots-Tag "noindex"
+	import bruchner_dev_headers Content-Security-Policy
 }
 
 bruchner.dev {

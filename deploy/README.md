@@ -139,7 +139,21 @@ rm bruchner-dev-deploy known_hosts   # the private key now lives only in GitHub
 
 ## Launch switch (plan 5.2)
 
-In `bruchner.dev.caddy`, change the `bruchner_dev_response_headers` snippet from
-`Content-Security-Policy-Report-Only` to `Content-Security-Policy` and delete the
-`X-Robots-Tag` line. Run `./deploy/test-caddy.sh`, commit, then copy the file to the
-host, validate and reload.
+Done: `bruchner_dev_response_headers` in `bruchner.dev.caddy` now sends the enforced
+`Content-Security-Policy` and no `X-Robots-Tag`. To go back to pre-launch mode, switch it
+to `Content-Security-Policy-Report-Only` and add `header X-Robots-Tag "noindex"`.
+
+## Updating the Caddy config
+
+Whenever `deploy/*.caddy` changes: run `./deploy/test-caddy.sh`, commit, then copy the
+changed file to the server and reload:
+
+```bash
+# Locally, from the repo root:
+scp deploy/bruchner.dev.caddy <you>@<vps>:/tmp/
+
+# On the server:
+sudo mv /tmp/bruchner.dev.caddy /etc/caddy/sites/
+sudo chown root:root /etc/caddy/sites/bruchner.dev.caddy
+sudo caddy validate --config /etc/caddy/Caddyfile && sudo systemctl reload caddy
+```
