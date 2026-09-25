@@ -1,8 +1,8 @@
 # Migration Plan: phhbr.de → bruchner.dev
 
-Rebrand and rebuild the personal site as a freelance portfolio: Jekyll → Astro, GitHub Pages → self-hosted VPS, deploy-on-push via GitHub Actions.
+Rebrand and rebuild the personal site as a freelance portfolio: Jekyll → Astro, GitHub Pages → the existing Caddy on the VPS, deploy-on-push via GitHub Actions.
 
-**Status:** in progress on branch `feat/astro-bruchner-dev`.
+**Status:** in progress on branch `feat/astro-bruchner-dev`. Phase 1 done (2026-09-25); the site builds with a baseline layout, and the redesign (Phase 2) is next. Contact address is `hello@phhbr.de` until 0.2 is done.
 
 ---
 
@@ -11,154 +11,184 @@ Rebrand and rebuild the personal site as a freelance portfolio: Jekyll → Astro
 | Area | Decision |
 |---|---|
 | Stack | Migrate Jekyll (Klisé fork) → **Astro**, static output |
-| Hosting | **Docker image → GHCR → VPS**, deploy on push to `main` |
-| VPS | **Caddy already running** — acts as edge/TLS; site container sits behind it |
+| Hosting | **Static files served by the existing edge Caddy** on the VPS. No container, no registry, no second Caddy |
+| Deploy | CI builds `dist/` and **rsyncs** it to the VPS through a key locked to `rrsync`. The deploy user is genuinely unprivileged (no shell, no docker group, no sudo) |
 | Design | **Full redesign, technical/developer-brand** (mono accents, terminal feel, subtle grid) |
 | Content | **Archive posts**; site becomes a portfolio/landing page; add `/services` |
 | Domain | **phhbr.de → bruchner.dev**; phhbr.de keeps a permanent 301, renewed indefinitely |
-| Contact | Single canonical **hello@bruchner.dev** |
-| Repo | Rename `phhbr.github.io` → `bruchner.dev`; default branch `master` → `main` |
+| Contact | Single canonical **hello@bruchner.dev** on Proton Mail (same account as phhbr.de) |
+| Repo | Rename `phhbr.github.io` → `bruchner.dev`; default branch `master` → `main`. **Both happen after cutover** (Phase 6) |
+
+**Why not a container:** the site is ~10 static HTML files. Docker + GHCR + a second Caddy would add a registry credential, a root-equivalent `docker` group member, digest-pinning upkeep and a split header config, and in exchange it would only serve files the edge Caddy can already serve. The real attack surface is the VPS itself, and every extra moving part on it makes that surface bigger.
 
 ## Legacy URLs to preserve
 
-`/hello-world/` · `/still-alive/` · `/looking-for-something-new/` · `/freelance-availability/` · `/leaving-linkedin/` · `/about/` · `/resume/` · `/legal/` · `/notes/` · `/thanks/` · `/tags/` · `/feed.xml` · `/sitemap.xml`
+| Old path | New behaviour |
+|---|---|
+| `/hello-world/` `/still-alive/` `/freelance-availability/` `/leaving-linkedin/` | 200 at the **same path** |
+| `/looking-for-something-new/` | 301 → `/relaunch/` (post removed, open decision 4) |
+| `/legal/` | 200 |
+| `/resume/` | 301 → `/cv/` |
+| `/about/` `/notes/` `/thanks/` | 301 → `/` |
+| `/tags/` | 301 → `/writing/` |
+| `/feed.xml` | 200 (RSS 2.0 replaces jekyll-feed's Atom at the same URL) |
+| `/sitemap.xml` | 301 → `/sitemap-index.xml` (`@astrojs/sitemap` does not emit `sitemap.xml`) |
+
+All 301s live in the edge Caddy config (4.1). Astro's `redirects` option is **not** used: in static output it emits meta-refresh pages, not real 301s.
 
 ---
 
 ## Phase 0 — Prep (no code)
 
-- [ ] 0.1 Register/confirm `bruchner.dev` + DNS A/AAAA → VPS
-- [ ] 0.2 Set up `hello@bruchner.dev`; alias old `blog@` / `cv@` / `freelance@` on phhbr.de so inbound isn't lost
-- [ ] 0.3 Rename GitHub repo → `bruchner.dev`; rename branch `master` → `main`, set as default
-- [ ] 0.4 **Disable GitHub Pages** on the repo — prevents a stale parallel deployment
-- [ ] 0.5 VPS: unprivileged `deploy` user (docker group or rootless Docker); create `/srv/bruchner.dev/`
-- [ ] 0.6 Dedicated ed25519 deploy key, restricted in `authorized_keys` with `command=`, `no-agent-forwarding,no-port-forwarding,no-pty,no-X11-forwarding`
+- [ ] 0.0 **Delegate DNSSEC for phhbr.de.** deSEC signs the zone, but there is no DS record at DENIC, so the signatures are never checked (and mail DNS can be spoofed). Copy the DS records from deSEC (domain → ⓘ) into phhbr.de's registrar and verify with dnsviz.net. This is also the prerequisite for 0.1: deSEC raises the domain limit (currently 1) only once existing domains are securely delegated
+- [ ] 0.1 **DNS for bruchner.dev.** The domain is registered and currently uses netcup's default nameservers with no records. Move the NS to **deSEC** before adding anything, so both domains live in one place with DNSSEC and an API. Then add A/AAAA for apex + `www` → VPS (not yet; see 5.1)
+- [ ] 0.2 **Mail: `hello@bruchner.dev` on Proton** (phhbr.de is already on Proton; check that the plan allows a second custom domain)
+  - Proton → Settings → Domain names → Add `bruchner.dev`
+  - DNS: Proton `TXT` verification token · `MX 10 mail.protonmail.ch.` + `MX 20 mailsec.protonmail.ch.` · `TXT "v=spf1 include:_spf.protonmail.ch ~all"` · three DKIM `CNAME`s (`protonmail`, `protonmail2`, `protonmail3` `._domainkey`, targets from the Proton UI) · `_dmarc TXT "v=DMARC1; p=quarantine"`
+  - Create the address `hello@bruchner.dev`, set it as the default sender for new mail
+  - Then switch `SITE.email` in `src/config.ts` and replace `hello@phhbr.de` in `src/content/posts/` (the site uses it as the interim address)
+  - Keep `blog@` / `cv@` / `freelance@phhbr.de` receiving; phhbr.de's MX/SPF/DKIM/DMARC are **never touched** during this migration
+  - Verify: all Proton DNS checks green, send to a Gmail account (SPF/DKIM/DMARC `pass` in headers), mail-tester.com ≥ 9/10
+- [ ] 0.3 VPS: create `deploy` user with **no password, no shell login**, not in `docker`/`sudo`; `/srv/bruchner.dev/site/` owned by `deploy`, world-readable so Caddy can serve it
+- [ ] 0.4 Dedicated ed25519 deploy key in `~deploy/.ssh/authorized_keys`: `command="rrsync /srv/bruchner.dev/site",no-agent-forwarding,no-port-forwarding,no-pty,no-X11-forwarding`. The key can write into that one directory and do nothing else
+- [ ] 0.5 Optional: `CAA` records on bruchner.dev. Caddy falls back to ZeroSSL when Let's Encrypt fails, so allow **both** (`0 issue "letsencrypt.org"`, `0 issue "sectigo.com"`) or pin Caddy to Let's Encrypt
 
 ## Phase 1 — Astro scaffold + content migration
 
-- [ ] 1.1 Astro 7, TypeScript `strict`, static output (no adapter), `site: 'https://bruchner.dev'`
-- [ ] 1.2 Integrations: `@astrojs/sitemap`, `@astrojs/rss`, and the built-in **Fonts API** — it downloads and self-hosts fonts at build time, which is what kills the `fonts.gstatic.com` request
-- [ ] 1.3 Content collections in `src/content.config.ts`:
-  - `posts` — `glob()` over `src/content/posts`; Zod: `title`, `description`, `pubDate` (`z.coerce.date()`), `tags`, `draft`, `archived`
-  - `services` — `glob()` over `src/content/services`; Zod: `title`, `summary`, `order`, `skills`
-  - `cv` — `file('src/data/cv.yml')`; roles, education, certs, testimonials as *data*, not markup
-- [ ] 1.4 Port all 5 posts, **keeping slugs identical**. Fix the `hello-world` filename/frontmatter year mismatch (file → `2020-05-01-hello-world.md`, slug stays `hello-world`)
-- [ ] 1.5 Rewrite for the rebrand:
-  - `looking-for-something-new` → dated editor's note (LinkedIn is gone, contact is `hello@`), `archived: true`
-  - `freelance-availability` → substance moves to `/services`; post gets `archived: true` + a link there
-  - `leaving-linkedin` → contact block → `hello@bruchner.dev`; phone number decision pending
-  - Global replace `phhbr.de` → `bruchner.dev`; `blog@`/`cv@`/`freelance@` → `hello@`
-- [ ] 1.6 Delete: `about.md`, `notes.md`, `thanks.md`, `tags.md`, `now.json`, `browserconfig.xml`, `lighthouse.png`, `scripts/`, `_includes/`, `_layouts/`, `_sass/`, `Gemfile*`, `CNAME`, `.github/ISSUE_TEMPLATE/`, `_site/`
+- [x] 1.1 Astro 7, **current stable, pinned**; TypeScript `strict`; static output (no adapter); `site: 'https://bruchner.dev'`; `trailingSlash: 'always'` (matches Jekyll's `/:title/` URLs); `build.inlineStylesheets: 'never'` (see 3.2)
+- [x] 1.2 `@astrojs/sitemap` integration; `@astrojs/rss` helper in `src/pages/feed.xml.ts`; fonts (chosen in 2.1) self-hosted via **Fontsource** packages (bundled into the external stylesheet, no `fonts.gstatic.com`). Astro's `<Font />` component is **not** used, because it emits inline `<style>` tags that the CSP blocks
+- [x] 1.3 Content collections in `src/content.config.ts`:
+  - `posts`: `glob()` over `src/content/posts` with a **`generateId` that strips the `YYYY-MM-DD-` prefix**, so `2022-03-01-still-alive.md` → `still-alive`. Zod: `title`, `description`, `pubDate` (`z.coerce.date()`), `archived` (default `true`). No tags, no drafts
+  - `services`: `glob()` over `src/content/services`; Zod: `title`, `summary`, `order`, `skills`
+  - CV: typed module `src/data/cv.ts` rather than a collection, since it is one structured document, not a set of entries; roles, education, certs, testimonials as *data*, not markup
+- [x] 1.4 Port all 5 posts, **keeping slugs identical**. Fix the `hello-world` filename/frontmatter year mismatch (file → `2020-05-01-hello-world.md`, slug stays `hello-world`)
+- [ ] 1.5 Rewrite for the rebrand (done except the personal-detail pass and open decision 4):
+  - `looking-for-something-new` → removed, URL redirects to `/relaunch/` (open decision 4)
+  - `freelance-availability` → substance moves to `/services`; post gets an editor's note + a link there
+  - `leaving-linkedin` → contact block → `hello@bruchner.dev`; phone number removed
+  - [x] `hello-world` / `still-alive` → **personal-detail pass**, the same way open decision 1 is handled: family details, employer, and the home-automation/solar/garden inventory are pretexting material
+  - Global replace `phhbr.de` → `bruchner.dev`; `blog@`/`cv@`/`freelance@` → `hello@` (interim `hello@phhbr.de`, see 0.2)
+  - Feed item GUIDs change origin (`phhbr.github.io` → `bruchner.dev`), so feed readers will show the 5 posts as new once. Accepted
+- [x] 1.6 Delete: `about.md`, `notes.md`, `thanks.md`, `tags.md`, `now.json`, `browserconfig.xml`, `lighthouse.png`, `scripts/`, `_includes/`, `_layouts/`, `_sass/`, `Gemfile*`, `CNAME`, `.github/ISSUE_TEMPLATE/`, `_site/`. Their URLs are handled by the redirect map above
 
 ## Phase 2 — Design & pages
 
-- [ ] 2.1 Tokens in `src/styles/tokens.css` — custom properties + `color-scheme` / `light-dark()`. Mono display face for headings and UI chrome, readable sans for body. Self-hosted, subset, `font-display: swap`, preloaded
-- [ ] 2.2 Dark mode defaults to `prefers-color-scheme` via CSS only; toggle writes `localStorage` + `data-theme` on `<html>`. **Fix the FOUC** with a tiny blocking inline script in `<head>` — its sha256 goes into the CSP `script-src`
-- [ ] 2.3 Layouts: `BaseLayout` (head, meta, OG, JSON-LD `Person` + `ProfessionalService`), `PageLayout`, `PostLayout`
+- [ ] 2.1 Tokens in `src/styles/tokens.css`: custom properties + `color-scheme` / `light-dark()`. Mono display face for headings and UI chrome, readable sans for body. Self-hosted, subset, `font-display: swap`, preloaded via `<link rel="preload">` to the hashed font URL
+- [ ] 2.2 Dark mode defaults to `prefers-color-scheme` via CSS only; toggle writes `localStorage` + `data-theme` on `<html>`. **Fix the FOUC** with a tiny **external, blocking** `public/theme-init.js` loaded as `<script is:inline src="/theme-init.js">` in `<head>`. One small, cacheable same-origin request, with no CSP hash to keep in sync
+- [ ] 2.3 Layouts: `BaseLayout` (head, meta, OG, JSON-LD `Person` + `ProfessionalService`; `ld+json` isn't executed, so CSP doesn't apply), `PageLayout`, `PostLayout`
 - [ ] 2.4 Components: `Nav`, `Footer`, `Hero`, `ServiceCard`, `TechStack`, `TestimonialCard`, `ThemeToggle`, `Prose`
 - [ ] 2.5 Pages:
-  - `/` — hero with one-line positioning + availability, 3–4 service blocks, tech stack strip, 2–3 testimonials, single CTA
-  - `/services` — full offering, engagement models, availability posture, CTA
-  - `/cv` — rendered from `src/data/`; `/resume/` kept as a 301 alias
-  - `/writing` — archived post index, clearly labelled as an archive
-  - Root-level `[...slug]` — resolves the 5 legacy slugs at their **original paths**
-  - `/legal` — Impressum (updated address/email/domain). Must carry a **plain-text** e-mail address and a phone number to satisfy § 5 DDG
-  - `/privacy` — separate Datenschutzerklärung; now genuinely accurate (self-hosted fonts, no analytics, no cookies). Must disclose server access logs + retention
+  - `/`: hero with one-line positioning + availability, 3–4 service blocks, tech stack strip, 2–3 testimonials, single CTA
+  - `/services`: full offering, engagement models, availability posture, CTA
+  - `/cv`: rendered from `src/data/`; `/resume/` → 301 at the edge
+  - `/writing`: archived post index, clearly labelled as an archive
+  - `src/pages/[slug].astro`: the 5 legacy post slugs at their **original paths** (a single segment, not a `[...slug]` catch-all)
+  - `/legal`: Impressum (updated address/email/domain). Must carry a **plain-text** e-mail address and a phone number (§ 5 DDG). Add the **USt-IdNr** if one exists (§ 5 Abs. 1 Nr. 6 DDG), and name the person responsible for the editorial content (§ 18 Abs. 2 MStV) since posts stay online
+  - `/privacy`: separate Datenschutzerklärung that is now accurate: self-hosted fonts, no analytics, no cookies. Must name the **VPS provider** (AVV in place) and **Proton** (mail) as processors, and describe access logging exactly as configured in 4.1
   - `/404`
 - [ ] 2.6 Visual language: monospace kickers/labels, thin rules, single accent colour, `::selection` styling, subtle dotted/grid background, generous whitespace. Zero client JS beyond the toggle
-- [ ] 2.7 A11y: visible focus rings, skip link, `prefers-reduced-motion`, semantic landmarks, contrast ≥ 4.5:1 in both themes — the CV claims a11y expertise, the site should prove it
+- [ ] 2.7 A11y: visible focus rings, skip link, `prefers-reduced-motion`, semantic landmarks, contrast ≥ 4.5:1 in both themes. The CV claims a11y expertise, so the site should show it
 
 ## Phase 3 — Security hardening
 
-- [ ] 3.1 **Self-hosted fonts** (via 1.2 / 2.1) — removes the only third-party request and the GDPR/Impressum contradiction
-- [ ] 3.2 **CSP** in the container Caddyfile:
-      `default-src 'none'; script-src 'self' 'sha256-<toggle-hash>'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests`
-      Ship `Content-Security-Policy-Report-Only` first, verify clean, then enforce
-- [ ] 3.3 Other headers: `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()`, `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Resource-Policy: same-origin`, `X-Frame-Options: DENY`. Strip the `Server` header
-- [ ] 3.4 **HSTS on the edge Caddy only**: `max-age=63072000; includeSubDomains; preload`. Submit to the preload list only once the domain is stable
-- [ ] 3.5 Remove the `<meta name="referrer">` tag (header supersedes it) and the leftover Pinterest `p:domain_verify` token
-- [ ] 3.6 **Commit `package-lock.json`** (never gitignore it) + `.github/dependabot.yml` for npm, github-actions and docker, weekly. Add `npm audit --audit-level=high` to CI
-- [ ] 3.7 Enable GitHub secret scanning + push protection
-- [ ] 3.8 Container hardening: non-root user, `read_only: true` rootfs + `tmpfs` for Caddy's data dir, `security_opt: [no-new-privileges:true]`, `cap_drop: [ALL]`, base images pinned **by digest**, published on `127.0.0.1:<port>` only — never `0.0.0.0`
-- [ ] 3.9 CI hardening: pin all actions by commit SHA, least-privilege `permissions:` per job, no `pull_request_target`, no secrets in fork PRs
-- [ ] 3.10 All external links get `rel="noopener noreferrer"`. Email stays a `mailto:` — a contact form would add a backend and a spam surface for no real gain. **Exception:** on `/legal` the address must be rendered as **plain text**, since § 5 DDG is not satisfied by a `mailto:` link alone
-- [ ] 3.11 `/.well-known/security.txt` with `Contact: mailto:hello@bruchner.dev` and `Expires`
-- [ ] 3.12 `robots.txt` + sitemap generated with the correct `https://bruchner.dev` origin
+- [ ] 3.1 **Self-hosted fonts** (via 1.2 / 2.1): removes the only third-party request and the GDPR/Impressum contradiction
+- [ ] 3.2 **CSP as a static header, no inline code anywhere**:
+      `default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests`
+      Ship as `Content-Security-Policy-Report-Only` first, verify clean, then enforce.
+      *Why no hashes:* Astro's `security.csp` emits a `<meta>` CSP, and a header CSP applies on top of it (both must pass). With `default-src 'none'` in the header, hashed inline code would still be blocked unless the header is loosened. A meta CSP also can't express `frame-ancestors` or report-only. A policy with no inline code never drifts
+- [x] 3.3 **CI guard for 3.2**: `scripts/check-inline.mjs`, part of `npm run build`: fails if any `dist/**/*.html` contains a `<style>` element, a `style=` attribute, or a `<script>` without `src` (except `type="application/ld+json"`)
+- [ ] 3.4 Other headers: `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy: camera=(), microphone=(), geolocation=()`, `Cross-Origin-Opener-Policy: same-origin`, `Cross-Origin-Resource-Policy: same-origin`, `X-Frame-Options: DENY`. Strip the `Server` header. (No `interest-cohort`: Chrome logs it as an unrecognised feature, which costs the Lighthouse Best Practices 100)
+- [ ] 3.5 **HSTS** on bruchner.dev: `max-age=63072000; includeSubDomains; preload`. No preload-list submission is needed, because the whole `.dev` TLD is already preloaded
+- [ ] 3.6 Remove the `<meta name="referrer">` tag (header supersedes it) and the leftover Pinterest `p:domain_verify` token
+- [ ] 3.7 **Commit `package-lock.json`** (never gitignore it) + `.github/dependabot.yml` for `npm` and `github-actions`, weekly, **grouped** (one PR per ecosystem). `npm audit --audit-level=high` runs as a **report-only** job, not a deploy gate: an advisory in a build-only dependency must not block an urgent Impressum fix
+- [ ] 3.8 Enable GitHub secret scanning + push protection
+- [ ] 3.9 Host side: the deploy key can only run `rrsync` into `/srv/bruchner.dev/site` (0.4). Uploaded files are `D755,F644`; Caddy only reads. CI never writes Caddy config
+- [ ] 3.10 CI hardening: pin all actions by commit SHA, least-privilege `permissions:` per job, no `pull_request_target`, no secrets in fork PRs
+- [ ] 3.11 All external links get `rel="noopener noreferrer"`. Email stays a `mailto:`, since a contact form would add a backend and a spam surface for no real gain. **Exception:** on `/legal` the address must be rendered as **plain text**, since § 5 DDG is not satisfied by a `mailto:` link alone
+- [x] 3.12 `/.well-known/security.txt` with `Contact:` from `SITE.email` and an `Expires` refreshed on every build
+- [x] 3.13 `robots.txt` pointing at `https://bruchner.dev/sitemap-index.xml`; sitemap generated with the correct origin
 
-## Phase 4 — Container + CI/CD
+## Phase 4 — Serving + CI/CD
 
-- [ ] 4.1 `Dockerfile`, multi-stage:
-  - `build`: `node:22-alpine@sha256:…` → `npm ci` → `npm run build` → `/app/dist`
-  - `runtime`: `caddy:2-alpine@sha256:…`, copy `dist` → `/srv`, copy `Caddyfile`, non-root, listen on `:8080`
-- [ ] 4.2 `Caddyfile` (in-container): serve `/srv`, `file_server`, `try_files`, `handle_errors` → `/404.html`, all headers from 3.2/3.3, `encode zstd gzip`, immutable `Cache-Control` for `/_astro/*`, short/`no-cache` for HTML
-- [ ] 4.3 `.dockerignore`: `node_modules`, `dist`, `.git`, `.github`, `.astro`
-- [ ] 4.4 `compose.yaml` (versioned in repo, deployed to `/srv/bruchner.dev/`): image `ghcr.io/phhbr/bruchner.dev:latest`, `ports: ["127.0.0.1:8080:8080"]`, restart policy, hardening from 3.8, healthcheck
-- [ ] 4.5 **Edge Caddy** (existing, on the host):
-  - `bruchner.dev, www.bruchner.dev` → `reverse_proxy 127.0.0.1:8080` + HSTS header
-  - `phhbr.de, www.phhbr.de` → `redir https://bruchner.dev{uri} permanent`
-  - `www` → apex as a 301
-  - Keep a copy of this snippet in the repo under `deploy/`
-- [ ] 4.6 `.github/workflows/deploy.yml` on push to `main`:
-  - job `build`: checkout → setup-node (cached) → `npm ci` → `npm run build` → `npm audit` → `docker/build-push-action` → GHCR, tagged `sha-<short>` **and** `latest`
-  - job `deploy` (needs build): SSH as `deploy`, `docker compose pull && docker compose up -d && docker image prune -f`
-  - Secrets: `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`, `VPS_SSH_KNOWN_HOSTS` — pin the host key, **never** `StrictHostKeyChecking=no`
-  - Concurrency group to cancel superseded deploys
-- [ ] 4.7 `.github/workflows/pr.yml` on pull_request: build + `astro check` + link check + Lighthouse CI. No deploy, no secrets
+- [ ] 4.1 `deploy/bruchner.dev.caddy`: the edge site blocks, **versioned in the repo and applied to the host by hand**:
+  - `bruchner.dev`: `root * /srv/bruchner.dev/site`, `file_server`, `encode zstd gzip`, all headers from 3.2–3.5, `-Server`
+  - `Cache-Control: public, max-age=31536000, immutable` for `/_astro/*`; `no-cache` for HTML
+  - Legacy redirect map from the table above (`redir … permanent`)
+  - `handle_errors` → rewrite to `/404.html`
+  - Access logging: **off**, or on with IPs masked (`log { format filter { request>remote_ip ip_mask 16 32 } }`) and a stated retention. The privacy page (2.5) must match what is configured
+  - `www.bruchner.dev` → `redir https://bruchner.dev{uri} permanent`
+  - `phhbr.de, www.phhbr.de` → `redir https://bruchner.dev{uri} permanent` (legacy paths then hit the map above; two hops is acceptable)
+- [ ] 4.2 `.github/workflows/deploy.yml`, triggered on push to `main` **and** `workflow_dispatch` (with a `ref` input):
+  - job `build`: checkout → setup-node (cached) → `npm ci` → `astro check` → `npm run build` → 3.3 inline guard → write `dist/version.txt` with the commit SHA → upload artifact
+  - job `deploy` (needs build): `rsync -rlc --delete-delay --delay-updates --chmod=D755,F644 dist/ deploy@$VPS_HOST:` → `curl https://bruchner.dev/version.txt` must equal the SHA
+  - Secrets: `VPS_HOST`, `VPS_SSH_KEY`, `VPS_SSH_KNOWN_HOSTS`. Pin the host key; **never** `StrictHostKeyChecking=no`
+  - Concurrency group with `cancel-in-progress: false`: queue deploys, don't kill one mid-rsync
+  - **Rollback** = `workflow_dispatch` with an earlier `ref`. Git is the release history
+- [ ] 4.3 `.github/workflows/pr.yml` on pull_request: build + `astro check` + inline guard + link check (`lychee`) + Lighthouse CI. No deploy, no secrets
 
 ## Phase 5 — Cutover
 
-- [ ] 5.1 Deploy to `next.bruchner.dev` first, with `X-Robots-Tag: noindex` at the edge; verify
-- [ ] 5.2 Flip DNS for `bruchner.dev` apex/www; confirm Caddy issues certs
-- [ ] 5.3 Repoint `phhbr.de` DNS from GitHub Pages IPs to the VPS; verify path-preserving 301s
-- [ ] 5.4 Add both domains to Google Search Console; submit the new sitemap; use the Change of Address tool for phhbr.de
-- [ ] 5.5 Remove `noindex` from production; verify `robots.txt`, `sitemap.xml`, `feed.xml` all emit `bruchner.dev`
+Nothing is merged to `master` during this phase: GitHub Pages builds phhbr.de from `master`, and merging the Astro branch there would make Pages rebuild the live site from Astro source. Pre-cutover deploys run via `workflow_dispatch` from the feature branch.
+
+- [ ] 5.1 bruchner.dev A/AAAA (apex + `www`) → VPS. Install `deploy/bruchner.dev.caddy` **without** the phhbr.de block and with `X-Robots-Tag: noindex`. Deploy, verify everything in *Verification* except the phhbr.de items
+- [ ] 5.2 Switch CSP from report-only to enforced; remove `noindex`; verify `robots.txt`, `sitemap-index.xml`, `feed.xml` all emit `bruchner.dev`
+- [ ] 5.3 24h before: lower the TTL on phhbr.de's A/AAAA
+- [ ] 5.4 Add the phhbr.de block to the edge Caddy; repoint phhbr.de **A/AAAA only** from the GitHub Pages IPs to the VPS (MX, SPF, DKIM, DMARC, Proton verification untouched). Confirm cert issuance and path-preserving 301s
+- [ ] 5.5 Google Search Console: add bruchner.dev, submit `sitemap-index.xml`, then use **Change of Address** on phhbr.de (requires the 301s from 5.4 to be live)
 - [ ] 5.6 Update GitHub profile, email signatures, external profiles
+- [ ] 5.7 Set `pubDate` of `src/content/posts/2026-09-25-relaunch.md` (and its filename date) to the go-live date
+
+## Phase 6 — Cleanup (after 5.4 has been stable for about a week)
+
+- [ ] 6.1 **Disable GitHub Pages** on the repo
+- [ ] 6.2 Rename repo → `bruchner.dev`; rename `master` → `main`, set as default; **make the repo private** (Pages no longer needs it public, and the history holds personal details)
+- [ ] 6.3 Merge the feature branch via PR into `main`; from here on push-to-`main` deploys
 
 ---
 
 ## Verification
 
-1. `npm run build` clean; `astro check` → zero TS errors
-2. `docker build .` succeeds; `docker run -p 8080:8080` serves the site locally
-3. **securityheaders.com** → **A+** on `bruchner.dev`
-4. **Mozilla Observatory** → 100 / A+
-5. Devtools Network on hard reload: **zero third-party requests** (especially `fonts.gstatic.com`)
-6. CSP report-only produces no console violations before enforcing
-7. Lighthouse 100/100/100/100 on `/` and `/services`
-8. `curl -sI https://phhbr.de/leaving-linkedin/` → `301`, `Location: https://bruchner.dev/leaving-linkedin/`
-9. Every legacy slug resolves 200 or 301 — verify with `lychee` against the old sitemap
-10. Push to `main` → confirm end-to-end deploy and that the running container reports the new digest
-11. `docker inspect` confirms non-root user, read-only rootfs, no added capabilities
-12. `axe` + keyboard-only pass on `/` and `/services` in both themes
-13. Dependabot raises at least one PR — proves the lockfile is tracked and scanning works
+1. `npm run build` clean; `astro check` → zero TS errors; 3.3 inline guard passes
+2. **securityheaders.com** → **A+** on `bruchner.dev`
+3. **Mozilla Observatory** → 100 / A+
+4. Devtools Network on hard reload: **zero third-party requests** (especially `fonts.gstatic.com`)
+5. CSP report-only produces no console violations in either theme, including after toggling
+6. Lighthouse 100/100/100/100 on `/` and `/services`
+7. `curl -sI https://phhbr.de/leaving-linkedin/` → `301`, `Location: https://bruchner.dev/leaving-linkedin/`
+8. Every row of the legacy URL table returns the stated status. Run `lychee` against the old `_site/sitemap.xml` plus the redirect paths
+9. Push to `main` → `https://bruchner.dev/version.txt` shows the new SHA; `workflow_dispatch` of an older ref rolls back
+10. On the VPS: `sudo -u deploy -s` fails; `ssh -i <deploy key> deploy@host id` is refused by `rrsync`
+11. `axe` + keyboard-only pass on `/` and `/services` in both themes
+12. `package-lock.json` is tracked; `dependabot.yml` validates in the repo's *Insights → Dependency graph → Dependabot* tab
+13. Mail: Proton DNS checks green; mail-tester.com ≥ 9/10 from `hello@bruchner.dev`; inbound to `hello@bruchner.dev` **and** the old `@phhbr.de` addresses still arrives after 5.4
 
 ---
 
 ## Scope
 
-**Included:** full Astro rewrite, redesign, container + CI/CD, security headers, dependency scanning, domain migration with 301s, content consolidation.
+**Included:** full Astro rewrite, redesign, static deploy + CI/CD, security headers, dependency scanning, domain migration with 301s, content consolidation, mail on the new domain.
 
-**Excluded:** blogging going forward (posts archived, not deleted); comments; analytics of any kind; contact form/backend; CMS; i18n / German version.
+**Excluded:** regular blogging (earlier posts archived, not deleted; occasional new posts like the relaunch announcement set `archived: false`); comments; analytics of any kind; contact form/backend; CMS; i18n / German version; containers.
 
-Existing post URLs are preserved to protect inbound links and SEO. Edge Caddy owns TLS, HSTS and the phhbr.de redirect (host state); container Caddy owns CSP and app headers (repo-versioned).
+Existing post URLs are preserved to protect inbound links and SEO. The edge Caddy owns TLS, headers, redirects and the phhbr.de redirect; its config is versioned in `deploy/` but only ever applied by hand, never by CI.
 
 ---
 
 ## Security findings being fixed
 
-Carried over from the audit of the current site. The Jekyll site's attack surface was already near zero — no trackers, no third-party scripts, no vulnerable gems — so these are mostly hygiene and hosting-capability issues.
+Carried over from the audit of the current site. The Jekyll site's attack surface was already near zero (no trackers, no third-party scripts, no vulnerable gems), so these are mostly hygiene and hosting-capability issues.
 
 | # | Finding | Fixed by |
 |---|---|---|
 | 1 | **Google Fonts hotlinked** from `fonts.gstatic.com` (~60 `@font-face` in `_sass/klise/_fonts.scss`). Only third-party request; contradicts the Impressum's privacy claim. ~⅔ of the faces aren't referenced by any font stack | 3.1 |
-| 2 | **No security headers at all** — GitHub Pages cannot set them | 3.2, 3.3, 3.4 |
-| 3 | `<meta name="referrer" content="no-referrer-when-downgrade">` = permissive browser default | 3.3, 3.5 |
-| 4 | **`Gemfile.lock` gitignored** → unreproducible builds, Dependabot blind to CVEs | 3.6 |
+| 2 | **No security headers at all**, because GitHub Pages cannot set them | 3.2, 3.4, 3.5 |
+| 3 | `<meta name="referrer" content="no-referrer-when-downgrade">` = permissive browser default | 3.4, 3.6 |
+| 4 | **`Gemfile.lock` gitignored** → unreproducible builds, Dependabot blind to CVEs | 3.7 |
 | 5 | Unescaped Liquid into `href` in `_layouts/post.html` (`page.tweet`), referencing a non-existent `site.username`. Dead code, latent injection | Phase 1 (rewrite) |
-| 6 | `rel="noopener"` without `noreferrer` in `_config.yml` and `_includes/navbar.html` | 3.10 |
-| 7 | Leftover Pinterest `p:domain_verify` token of unverified ownership | 3.5 |
+| 6 | `rel="noopener"` without `noreferrer` in `_config.yml` and `_includes/navbar.html` | 3.11 |
+| 7 | Leftover Pinterest `p:domain_verify` token of unverified ownership | 3.6 |
 | 8 | `now.json` (orphan Zeit Now v2 config) publicly served; `lighthouse.png` and empty `scripts/` also published | 1.6 |
-| 9 | Canonical URL wrong — `url: https://phhbr.github.io` vs `CNAME: phhbr.de`, poisoning canonical/OG/sitemap/robots/feed | 1.1, 3.12 |
+| 9 | Canonical URL wrong: `url: https://phhbr.github.io` vs `CNAME: phhbr.de`, which breaks canonical/OG/sitemap/robots/feed | 1.1, 3.13 |
 | 10 | `CNAME` in `exclude:` → never copied to `_site/` | 1.6 (no longer applicable) |
 | 11 | Vendored `anchor_headings.html` v1.0.4 vs upstream 1.0.12; vendored theme = no upstream patch flow | Phase 1 (rewrite) |
 | 12 | Orphan `</a>` in navbar; `lang="{{ … \| default: " en " }}"` stray spaces in three layouts | Phase 2 (rewrite) |
@@ -168,44 +198,48 @@ Carried over from the audit of the current site. The Jekyll site's attack surfac
 
 ## Content problems being fixed
 
-- June 2025 post says "reach out here on LinkedIn"; the December post says LinkedIn was deleted — a live contradiction
-- June post is framed for recruiters (redundancy narrative, names the NIQ restructuring) — wrong signal for clients
+- June 2025 post says "reach out here on LinkedIn"; the December post says LinkedIn was deleted, so the two posts contradict each other
+- June post is framed for recruiters (redundancy narrative, names the NIQ restructuring), which sends the wrong signal to clients
 - Three contact addresses: `blog@`, `cv@`, `freelance@`
 - The freelance pitch is a chronological post, not a page; `notes.md` is an empty stub sitting in the main nav
+- Early posts share family, employer and home-setup details that conflict with the pretexting concern in open decision 1
 
 ---
 
 ## Open decisions
 
 ### 1. Home address in the Impressum
+
 A *ladungsfähige Anschrift* is legally required, but the current combination of home address + private phone + full employment timeline is a ready-made pretexting dossier.
 
-**Resolved (2026-09-25): keep the home address for now, fix the cheap wins instead.** Coworking is not wanted, and paying ~€100–250/month for a desk that goes unused is a poor trade for one Impressum line. See [co-address-setup.md](./co-address-setup.md).
+**Resolved (2026-09-25): keep the home address for now, fix the cheap wins instead.** Coworking is not wanted, and paying ~€100–250/month for a desk that goes unused is a poor trade for one Impressum line.
 
 In scope for this migration:
-- Dedicated phone number (VoIP) on `/legal`; the private 0911 landline comes off the site entirely
-- Phone removed from `leaving-linkedin.md`
-- CV dates coarsened to years in `src/data/cv.yml`
 
-> ⚠️ **Correction:** an earlier draft suggested a *virtual office / mail-forwarding address*. That was wrong — BGH V ZR 210/22 holds virtual offices are **not** ladungsfähig, risking an Abmahnung and a Bußgeld up to €50,000. Coworking spaces **are** ladungsfähig, even a single flex desk.
+- Dedicated phone number (VoIP) on `/legal`; the private 0911 landline comes off the site entirely (done)
+- Phone removed from `leaving-linkedin.md` (done)
+- CV dates coarsened to years in `src/data/cv.ts` (done)
+- Personal-detail pass over the early posts (1.5) (done: family, hobbies, home automation, solar and garden details removed)
+- **The public repo's git history still holds the old posts, the landline and the full CV dates.** Make the repo private in 6.2; the deploy works the same from a private repo
 
-> ⚠️ **Correction:** an earlier draft called a phone number a mandatory Impressum field. EuGH C-298/07 says the second contact channel need not be a phone — but the alternative requires answering a contact form within 30–60 minutes, so in practice a number stays.
+> ⚠️ **Correction:** an earlier draft suggested a *virtual office / mail-forwarding address*. That was wrong: BGH V ZR 210/22 holds virtual offices are **not** ladungsfähig, risking an Abmahnung and a Bußgeld up to €50,000. Coworking spaces **are** ladungsfähig, even a single flex desk.
+>
+> ⚠️ **Correction:** an earlier draft called a phone number a mandatory Impressum field. EuGH C-298/07 says the second contact channel need not be a phone, but the alternative requires answering a contact form within 30–60 minutes, so in practice a number stays.
 
 ### 2. Deploy mechanism
-SSH-from-CI means GitHub holds a key into the VPS.
 
-- **(A)** Forced-command SSH key — **chosen for now**
-- **(B)** Pull-based: a systemd timer on the VPS polls GHCR for a new digest; zero inbound access
-- **(C)** Tailscale SSH with ephemeral auth keys
+**Resolved (2026-09-25): rsync over SSH with an `rrsync`-restricted key** (0.4). GitHub still holds a key into the VPS, but it can only write static files into one directory.
 
-Move to (B) later if zero inbound CI access is wanted.
+If zero inbound CI access is wanted later: a systemd timer on the VPS pulls the latest release artifact (GitHub Releases or a tagged tarball) and swaps it in. The VPS then needs no inbound key at all.
 
 ### 3. Testimonials
-Seven anonymised quotes that all end in near-identical phrasing ("Any team would be lucky to have him") read as less credible than three varied, attributed ones. Consider 3 with real name + role + company (with permission), or swap them for concrete project outcomes.
+
+Six anonymised quotes that all end in near-identical phrasing ("Any team would be lucky to have him") read as less credible than three varied ones.
+
+**Resolved (2026-09-25): three quotes, still anonymised as role + company.** Kept the ones with distinct substance (reusable libraries across a department; strategic team player; goes above and beyond) from three different perspectives (tech lead, research scientist, peer engineer). Each is an excerpt that drops the repeated closing line. In `src/data/cv.ts`.
 
 ### 4. The June 2025 post
-Even archived with a note, it's the loudest career signal on the site and it names a former employer's restructuring.
 
-- **(A)** Keep with note
-- **(B)** Keep with note + `noindex` — **recommended**
-- **(C)** Unpublish
+It was written for recruiters, described being made redundant, and named a former employer's restructuring (engineering moved to India).
+
+**Resolved (2026-09-25): removed.** `/looking-for-something-new/` 301s to `/relaunch/`, which tells the freelance story for clients. `noindex` was rejected: it only hides the page from search engines, while `/writing/` would still show it to every visitor browsing the site. Copies remain in web archives and in git history until the repo goes private (6.2).
