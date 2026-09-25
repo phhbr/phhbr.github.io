@@ -86,6 +86,10 @@ check "404 serves the 404 page" grep -q 'Page not found' <<<"$(curl -sk --resolv
 www=$(req www.bruchner.dev /cv/)
 check "www -> apex" has "$www" '^location: https://bruchner.dev/cv/$'
 
+check "phhbr.de keeps the path" has "$(req phhbr.de /leaving-linkedin/)" '^location: https://bruchner.dev/leaving-linkedin/$'
+check "phhbr.de keeps the query" has "$(req phhbr.de '/feed.xml?x=1')" '^location: https://bruchner.dev/feed.xml?x=1$'
+check "www.phhbr.de -> bruchner.dev" has "$(req www.phhbr.de /resume/)" '^location: https://bruchner.dev/resume/$'
+
 if ((failures > 0)); then
   echo "$failures check(s) failed"
   docker logs "$NAME" 2>&1 | tail -20

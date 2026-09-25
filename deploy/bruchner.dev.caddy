@@ -53,7 +53,8 @@ www.bruchner.dev {
 	redir https://bruchner.dev{uri} permanent
 }
 
-# 5.4: uncomment once phhbr.de's A/AAAA records point at this host.
-# phhbr.de, www.phhbr.de {
-# 	redir https://bruchner.dev{uri} permanent
-# }
+# The old domain (plan 5.4): every path redirects to the same path here, and
+# legacy Jekyll paths then hit the redirects above.
+phhbr.de, www.phhbr.de {
+	redir https://bruchner.dev{uri} permanent
+}
