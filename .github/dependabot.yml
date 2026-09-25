@@ -8,6 +8,11 @@ updates:
       interval: weekly
     cooldown:
       default-days: 5
+    ignore:
+      # `astro check` needs TypeScript's programmatic API, which TypeScript 7 (the
+      # native compiler) doesn't ship yet: https://github.com/withastro/roadmap/discussions/1321
+      - dependency-name: typescript
+        update-types: ['version-update:semver-major']
     groups:
       dependencies:
         patterns: ['*']
