@@ -1,6 +1,8 @@
 # bruchner.dev
 
-Personal site and freelance portfolio of Philipp Bruchner. Built with [Astro](https://astro.build) as a static site.
+[![Deploy](https://github.com/phhbr/bruchner.dev/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/phhbr/bruchner.dev/actions/workflows/deploy.yml)
+
+Personal site and freelance portfolio of Philipp Bruchner, live at **[bruchner.dev](https://bruchner.dev)**. Built with [Astro](https://astro.build) as a static site.
 
 ## Development
 
