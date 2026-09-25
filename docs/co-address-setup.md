@@ -144,14 +144,22 @@ So: keep a number, just not that one.
 
 ### Options
 
+Checked 2026-09-25.
+
 | Option | Cost | Notes |
 |---|---|---|
-| **Dedicated prepaid SIM / eSIM** | ~€5–10/mo | eRecht24's suggestion. Simple, fully separate, no contract entanglement. Needs occasional topping up to stay active |
-| **VoIP number** (Sipgate, Placetel, …) | Free–low | Most flexible: rings your mobile, or goes to voicemail → e-mail. Can be silenced without losing reachability. Best fit if you'd rather not carry a second device |
+| **satellite Free** (by sipgate) | **€0/mo** | Real German mobile number (prefix `015679`), 100 free min/month, **voicemail transcription**, app-based over data/WiFi, independent of your SIM. ✅ **Best fit** |
+| Dedicated prepaid SIM / eSIM | ~€5–10/mo | eRecht24's own suggestion. Simple and fully separate, but voicemail-to-e-mail is usually not included, and it needs topping up to stay active |
+| sipgate business S | €12.95/user/mo, **min. 2 users** = ~€25.90/mo | Full cloud PBX. Wildly overspecified for one number that rings once a year |
+| Twilio / SIP trunk, pay-per-use | ~€1–3/mo | Cheapest in theory, but German numbers need regulatory address verification and you'd be *building* voicemail-to-e-mail yourself. Infrastructure for a phone number you don't use |
 | Keep the 0911 landline | €0 | It's your private line. No |
 | Personal mobile | €0 | Moves the problem rather than solving it |
 
-**Suggested:** a VoIP number with voicemail-to-e-mail. Genuine reachability for the one caller a year who needs it, no interruption from the rest, and it detaches cleanly from your private identity. A geographic 0911 VoIP number also keeps the local-business signal if you want it.
+**Recommendation: satellite Free.** It is genuinely €0, gives you a real German mobile number fully detached from your private line, transcribes voicemail, and needs no second device. For a number whose entire job is to sit in an Impressum and occasionally take a call, nothing else justifies its cost. It's a sipgate product, so the provider itself is an established German company rather than a fly-by-night app.
+
+> ⚠️ **Verify before publishing:** confirm that the number is **not reclaimed after a period of inactivity**. Free tiers sometimes recycle unused numbers — and a recycled number silently turns your Impressum into an incorrect one, which is the exact problem we're trying to avoid. Check the AGB/help centre, and if there's any doubt, the prepaid SIM at ~€5/month is the safe fallback.
+
+Trade-off worth knowing: `015679` is a recognisably VoIP-ish mobile prefix, where a geographic `0911` number would read more like a settled local business. If that signal matters to you, it's an argument for a paid geographic number — but it's a branding preference, not a compliance one.
 
 Whichever you pick, the number comes **out** of `leaving-linkedin.md` and appears only on `/legal`.
 
