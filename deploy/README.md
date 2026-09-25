@@ -73,9 +73,17 @@ $(brew --prefix rsync)/bin/rsync -e "ssh -i bruchner-dev-deploy" deploy@<vps>:
 
 ## 3. Caddy (plan 4.1)
 
+`deploy/*.caddy` are paths in this repo, on your **local** machine — the server
+doesn't have this repo cloned. Copy them up first:
+
 ```bash
+# Locally, from the repo root:
+scp deploy/security-headers.caddy deploy/bruchner.dev.caddy <you>@<vps>:/tmp/
+
+# On the server (or piped over ssh -t from local, like step 2):
 sudo install -d /etc/caddy/sites
-sudo cp deploy/security-headers.caddy deploy/bruchner.dev.caddy /etc/caddy/sites/
+sudo mv /tmp/security-headers.caddy /tmp/bruchner.dev.caddy /etc/caddy/sites/
+sudo chown root:root /etc/caddy/sites/*.caddy
 ```
 
 Add one line to `/etc/caddy/Caddyfile`, after any global options block:
