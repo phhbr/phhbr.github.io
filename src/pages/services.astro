@@ -1,0 +1,43 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../config';
+
+const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout title="Services" description="What I offer as a freelance software engineer and how I work.">
+  <h1>Services</h1>
+
+  {
+    services.map(({ data }) => (
+      <section>
+        <h2>{data.title}</h2>
+        <p>{data.summary}</p>
+        <ul>
+          {data.skills.map((skill) => (
+            <li>{skill}</li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+
+  <section aria-labelledby="engagement">
+    <h2 id="engagement">How I work</h2>
+    <ul>
+      <li>Greenfield projects that need solid foundations</li>
+      <li>Legacy modernisation that needs careful planning and execution</li>
+      <li>Team augmentation for critical frontend or full-stack initiatives</li>
+      <li>Technical consulting on architecture decisions and best practices</li>
+    </ul>
+    <p>
+      Based in Germany (CET). Remote, or on-site within reasonable travel distance.
+    </p>
+  </section>
+
+  <section aria-labelledby="contact">
+    <h2 id="contact">Get in touch</h2>
+    <p><a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+  </section>
+</BaseLayout>

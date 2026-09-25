@@ -1,0 +1,37 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../config';
+
+const services = (await getCollection('services')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout>
+  <section aria-labelledby="hero">
+    <p class="kicker">freelance software engineer · Germany · remote</p>
+    <h1 id="hero">{SITE.author}</h1>
+    <p>{SITE.description}</p>
+    <p>Available for new projects.</p>
+  </section>
+
+  <section aria-labelledby="services">
+    <h2 id="services">Services</h2>
+    <ul class="plain-list">
+      {
+        services.map(({ data }) => (
+          <li>
+            <strong>{data.title}</strong>: {data.summary}
+          </li>
+        ))
+      }
+    </ul>
+    <p><a href="/services/">All services and how I work</a></p>
+  </section>
+
+  <section aria-labelledby="contact">
+    <h2 id="contact">Get in touch</h2>
+    <p>
+      Tell me about your project: <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+    </p>
+  </section>
+</BaseLayout>

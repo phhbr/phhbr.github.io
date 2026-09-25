@@ -1,0 +1,11 @@
+---
+import { SITE } from '../config';
+---
+
+<footer class="site-footer">
+  <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+  <a href={SITE.github} rel="noopener noreferrer">github</a>
+  <a href="/legal/">legal</a>
+  <a href="/privacy/">privacy</a>
+  <span>&copy; {new Date().getFullYear()} {SITE.author}</span>
+</footer>

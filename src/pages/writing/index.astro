@@ -1,0 +1,24 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { formatDate } from '../../utils/date';
+
+const posts = (await getCollection('posts')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<BaseLayout title="Writing" description="Posts and archive.">
+  <h1>Writing</h1>
+  <p class="kicker">posts before the 2026 relaunch are archived and no longer updated</p>
+  <ul class="plain-list">
+    {
+      posts.map(({ id, data }) => (
+        <li>
+          <time datetime={data.pubDate.toISOString()}>{formatDate(data.pubDate)}</time>{' '}
+          <a href={`/${id}/`}>{data.title}</a>
+        </li>
+      ))
+    }
+  </ul>
+</BaseLayout>

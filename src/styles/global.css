@@ -1,0 +1,128 @@
+/* Baseline styles for the migration. The full redesign replaces this in Phase 2. */
+
+:root {
+  color-scheme: light dark;
+  --bg: light-dark(#ffffff, #111418);
+  --fg: light-dark(#1b1f24, #e6e8eb);
+  --muted: light-dark(#57606a, #9aa4ae);
+  --accent: light-dark(#0b5cad, #6cb0f5);
+  --rule: light-dark(#d8dee4, #2d333b);
+  --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --measure: 42rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font: 1.0625rem / 1.65 var(--font-body);
+}
+
+a {
+  color: var(--accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+}
+
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+}
+
+.site-header,
+main,
+.site-footer {
+  max-width: var(--measure);
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+.site-header nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 1.5rem;
+  font-family: var(--font-mono);
+}
+
+.site-header ul {
+  display: flex;
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-title {
+  color: var(--fg);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+[aria-current='page'] {
+  text-decoration-thickness: 2px;
+}
+
+.site-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-top: 4rem;
+  padding-block: 2rem;
+  border-top: 1px solid var(--rule);
+  color: var(--muted);
+  font: 0.875rem var(--font-mono);
+}
+
+.kicker,
+time {
+  color: var(--muted);
+  font: 0.875rem var(--font-mono);
+}
+
+blockquote {
+  margin-inline: 0;
+  padding-left: 1rem;
+  border-left: 3px solid var(--rule);
+  color: var(--muted);
+}
+
+.plain-list {
+  padding: 0;
+  list-style: none;
+}
+
+.plain-list li + li {
+  margin-top: 0.5rem;
+}
+
+.period {
+  display: inline-block;
+  min-width: 8rem;
+  color: var(--muted);
+  font: 0.875rem var(--font-mono);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}

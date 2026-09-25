@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import {
+  certificates,
+  education,
+  experience,
+  profile,
+  teaching,
+  testimonials,
+  trainings,
+  type Role,
+} from '../data/cv';
+
+const timelines: { heading: string; entries: Role[] }[] = [
+  { heading: 'Experience', entries: experience },
+  { heading: 'Education', entries: education },
+  { heading: 'Trainer / speaker', entries: teaching },
+  { heading: 'Trainings', entries: trainings },
+  { heading: 'Certificates', entries: certificates },
+];
+---
+
+<BaseLayout title="CV" description="Curriculum vitae of Philipp Bruchner, software engineer.">
+  <h1>Curriculum vitae</h1>
+
+  <section aria-labelledby="profile">
+    <h2 id="profile">Profile</h2>
+    <dl>
+      <dt>Role</dt>
+      <dd>{profile.role}</dd>
+      <dt>Focus</dt>
+      <dd>{profile.focus.join(', ')}</dd>
+      <dt>Core skills</dt>
+      <dd>{profile.coreSkills.join(', ')}</dd>
+    </dl>
+  </section>
+
+  {
+    timelines.map(({ heading, entries }) => (
+      <section>
+        <h2>{heading}</h2>
+        <ul class="plain-list">
+          {entries.map(({ period, title }) => (
+            <li>
+              <span class="period">{period}</span> {title}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))
+  }
+
+  <section aria-labelledby="recommendations">
+    <h2 id="recommendations">Recommendations</h2>
+    {
+      testimonials.map(({ quote, role, company }) => (
+        <figure>
+          <blockquote>
+            <p>“{quote}”</p>
+          </blockquote>
+          <figcaption>
+            — <strong>{role}</strong> at {company}
+          </figcaption>
+        </figure>
+      ))
+    }
+  </section>
+</BaseLayout>

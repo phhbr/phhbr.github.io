@@ -1,0 +1,26 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { formatDate } from '../utils/date';
+
+// Archived posts, served at their original Jekyll paths (`/:title/`).
+export const getStaticPaths = (async () => {
+  const posts = await getCollection('posts');
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}) satisfies GetStaticPaths;
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<BaseLayout title={post.data.title} description={post.data.description}>
+  <article>
+    <p class="kicker">
+      {post.data.archived && 'archived post · '}<time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+    </p>
+    <h1>{post.data.title}</h1>
+    <Content />
+  </article>
+  <p><a href="/writing/">← All posts</a></p>
+</BaseLayout>
